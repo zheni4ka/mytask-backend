@@ -1,0 +1,6 @@
+@mytask_backend_HostAddress = http://localhost:5228
+
+GET {{mytask_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
