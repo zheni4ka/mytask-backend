@@ -32,7 +32,7 @@ namespace business_logic.Services
 
         public async Task<AssignmentDTO> GetAssignmentAsync(int id)
         {
-            var obj = await _assignmentRepo.GetByIdAsync(id);
+            var obj = await _assignmentRepo.GetByIdAsync(new AssignmentSpecs.ById(id));
 
             if (obj == null) throw new KeyNotFoundException("Assignment not found");
 
