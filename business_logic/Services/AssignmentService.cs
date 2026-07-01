@@ -53,25 +53,25 @@ namespace business_logic.Services
 
         public async Task<IEnumerable<AssignmentDTO>> GetLatestByCategoryId(int categoryId)
         {
-            var assignments = new AssignmentSpecs.LatestByCategoryId(categoryId);
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId));
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId)
         {
-            var assignments = new AssignmentSpecs.ByCategoryId(categoryId);
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.ByCategoryId(categoryId));
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments()
         {
-            var assignments = new AssignmentSpecs.OverdueAssignments();
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments());
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead)
         {
-            var assignments = new AssignmentSpecs.UpcomingAssignments(daysAhead);
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead));
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 

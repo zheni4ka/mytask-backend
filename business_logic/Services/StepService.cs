@@ -51,13 +51,13 @@ namespace business_logic.Services
 
         public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId)
         {
-            var steps = new StepSpecs.ByIdWithAssignment(taskId);
+            var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.ByIdWithAssignment(taskId));
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 
         public async Task<IEnumerable<StepDTO>> GetIncompleteStepsWithAssignment(int taskId)
         {
-            var steps = new StepSpecs.IncompleteStepsForAssignment(taskId);
+            var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.IncompleteStepsForAssignment(taskId));
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
     }

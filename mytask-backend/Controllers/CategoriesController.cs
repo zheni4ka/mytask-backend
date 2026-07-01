@@ -52,7 +52,7 @@ namespace mytask_backend.Controllers
         [HttpGet("latest/{id:int}")]
         public async Task<IActionResult> GetByLatestAssignments(int id)
         {
-            return Ok(await _categoryService.GetLatestByCategoryId(id));
+            return Ok(await _categoryService.GetByLatestAssignments(id));
         }
 
         [HttpGet("with-assignments")]

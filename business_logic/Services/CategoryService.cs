@@ -50,19 +50,19 @@ namespace business_logic.Services
 
         public async Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id)
         {
-            var categories = new CategorySpecs.ByLatestAssignments(id);
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.ByLatestAssignments(id));
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments()
         {
-            var categories = new CategorySpecs.CategoriesWithActiveTasks();
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.CategoriesWithActiveTasks());
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories()
         {
-            var categories = new CategorySpecs.EmptyCategories();
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories());
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 

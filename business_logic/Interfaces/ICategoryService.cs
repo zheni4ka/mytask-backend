@@ -14,7 +14,7 @@ namespace business_logic.Interfaces
         Task InsertAsync(CreateCategoryModel assignment);
         Task UpdateAsync(EditCategoryModel assignment);
         Task DeleteAsync(int id);
-        Task<IEnumerable<CategoryDTO>> GetLatestByCategoryId(int id);
+        Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id);
         Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments();
         Task<IEnumerable<CategoryDTO>> GetEmptyCategories();
     }
