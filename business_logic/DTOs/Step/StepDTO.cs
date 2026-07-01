@@ -1,10 +1,13 @@
-﻿namespace business_logic.Entities
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace business_logic.DTOs
 {
-    public class Step
+    public class StepDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public int AssignmentId { get; set; }
-        public Assignment Assignment { get; set; }
     }
 }

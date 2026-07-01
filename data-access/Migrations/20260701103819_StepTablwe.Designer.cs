@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using data_access.data;
 
@@ -11,9 +12,11 @@ using data_access.data;
 namespace data_access.Migrations
 {
     [DbContext(typeof(MyTaskDbContext))]
-    partial class MyTaskDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701103819_StepTablwe")]
+    partial class StepTablwe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

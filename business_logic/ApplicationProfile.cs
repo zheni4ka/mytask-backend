@@ -19,6 +19,10 @@ namespace business_logic
             CreateMap<CreateCategoryModel, Category>().ReverseMap();
             CreateMap<CategoryDTO, Category>().ReverseMap();
             CreateMap<EditCategoryModel, Category>().ReverseMap();
+
+            CreateMap<CreateStepModel, Step>().ReverseMap();
+            CreateMap<StepDTO, Step>().ReverseMap();
+            CreateMap<EditStepModel, Step>().ReverseMap();
         }
     }
 }

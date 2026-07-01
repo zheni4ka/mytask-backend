@@ -43,6 +43,7 @@ namespace mytask_backend.Controllers
             return Ok();
         }
 
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _categoryService.DeleteAsync(id);

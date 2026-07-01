@@ -9,6 +9,11 @@ namespace data_access.Configs
         {
             builder.ToTable("Assignments");
             builder.HasKey(x => x.Id);
+
+            builder.HasOne(x => x.Category)
+                   .WithMany(c => c.Assignments)
+                   .HasForeignKey(x => x.CategoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
