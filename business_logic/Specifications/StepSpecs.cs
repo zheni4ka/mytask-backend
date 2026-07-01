@@ -23,5 +23,15 @@ namespace business_logic.Specifications
                 Query.Where(x => x.AssignmentId == id).Include(x => x.Assignment);
             }
         }
+
+        public class IncompleteStepsForAssignment : Specification<Step>
+        {
+            public IncompleteStepsForAssignment(int assignmentId)
+            {
+                Query.Where(s => s.AssignmentId == assignmentId)
+                     .OrderBy(s => s.Id).Where(x => !x.IsCompleted);
+            }
+        }
+
     }
 }

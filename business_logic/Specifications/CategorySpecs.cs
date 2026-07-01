@@ -26,10 +26,28 @@ namespace business_logic.Specifications
 
         public class ByLatestAssignments : Specification<Category>
         {
-            public ByLatestAssignments()
+            public ByLatestAssignments(int categoryId)
             {
-                Query.Include(c => c.Assignments)
+                Query.Where(c => c.Id == categoryId)
+                     .Include(c => c.Assignments)
                      .OrderByDescending(c => c.Assignments.Max(a => a.DueDate));
+            }
+        }
+
+        public class CategoriesWithActiveTasks : Specification<Category>
+        {
+            public CategoriesWithActiveTasks()
+            {
+                Query.Where(c => c.Assignments.Any(a => !a.IsCompleted))
+                     .OrderBy(c => c.Name);
+            }
+        }
+
+        public class EmptyCategories : Specification<Category>
+        {
+            public EmptyCategories()
+            {
+                Query.Where(c => !c.Assignments.Any());
             }
         }
     }

@@ -2,6 +2,7 @@
 using business_logic.DTOs;
 using business_logic.Entities;
 using business_logic.Interfaces;
+using business_logic.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -45,6 +46,24 @@ namespace business_logic.Services
         {
             _categoryRepo.Update(_mapper.Map<Category>(category));
             await _categoryRepo.SaveAsync();
+        }
+
+        public async Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id)
+        {
+            var categories = new CategorySpecs.ByLatestAssignments(id);
+            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+        }
+
+        public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments()
+        {
+            var categories = new CategorySpecs.CategoriesWithActiveTasks();
+            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+        }
+
+        public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories()
+        {
+            var categories = new CategorySpecs.EmptyCategories();
+            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
     }

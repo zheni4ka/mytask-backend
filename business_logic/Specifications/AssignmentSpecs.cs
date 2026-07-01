@@ -34,6 +34,23 @@ namespace business_logic.Specifications
             }
         }
 
+        public class OverdueAssignments : Specification<Assignment>
+        {
+            public OverdueAssignments()
+            {
+                Query.Where(a => !a.IsCompleted && a.DueDate < DateTime.UtcNow)
+                     .OrderBy(a => a.DueDate);
+            }
+        }
 
+        public class UpcomingAssignments : Specification<Assignment>
+        {
+            public UpcomingAssignments(int daysAhead)
+            {
+                var futureDate = DateTime.UtcNow.AddDays(daysAhead);
+                Query.Where(a => !a.IsCompleted && a.DueDate >= DateTime.UtcNow && a.DueDate <= futureDate)
+                     .OrderBy(a => a.DueDate);
+            }
+        }
     }
 }

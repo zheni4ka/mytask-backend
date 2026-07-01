@@ -24,7 +24,7 @@ namespace mytask_backend.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete([FromBody] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _assignmentService.DeleteAsync(id);
             return Ok();
@@ -47,6 +47,30 @@ namespace mytask_backend.Controllers
         public async Task<IActionResult> Get(int id)
         {
             return Ok(await _assignmentService.GetAssignmentAsync(id));
+        }
+
+        [HttpGet("latest/{id:int}")]
+        public async Task<IActionResult> GetLatestByCategoryId(int id)
+        {
+            return Ok(await _assignmentService.GetLatestByCategoryId(id));
+        }
+
+        [HttpGet("by-category/{id:int}")]
+        public async Task<IActionResult> GetByCategoryId(int id)
+        {
+            return Ok(await _assignmentService.GetByCategoryId(id));
+        }
+
+        [HttpGet("overdue")]
+        public async Task<IActionResult> GetOverdueAssignments()
+        {
+            return Ok(await _assignmentService.GetOverdueAssignments());
+        }
+
+        [HttpGet("upcoming/{daysAhead:int}")]
+        public async Task<IActionResult> GetUpcomingAssignments(int daysAhead)
+        {
+            return Ok(await _assignmentService.GetUpcomingAssignments(daysAhead));
         }
 
     }

@@ -16,24 +16,11 @@ namespace mytask_backend.Controllers
             this._categoryService = categoryService;
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _categoryService.GetAll());
-        }
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryModel model)
         {
             await _categoryService.InsertAsync(model);
             return Ok();
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            return Ok(await _categoryService.GetCategoryAsync(id));
         }
 
         [HttpPut]
@@ -44,12 +31,41 @@ namespace mytask_backend.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             await _categoryService.DeleteAsync(id);
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _categoryService.GetAll());
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            return Ok(await _categoryService.GetCategoryAsync(id));
+        }
+
+        [HttpGet("latest/{id:int}")]
+        public async Task<IActionResult> GetByLatestAssignments(int id)
+        {
+            return Ok(await _categoryService.GetLatestByCategoryId(id));
+        }
+
+        [HttpGet("with-assignments")]
+        public async Task<IActionResult> GetCategoriesWithAssignments()
+        {
+            return Ok(await _categoryService.GetCategoriesWithAssignments());
+        }
+
+        [HttpGet("empty")]
+        public async Task<IActionResult> GetEmptyCategories()
+        {
+            return Ok(await _categoryService.GetEmptyCategories());
+        }
 
     }
 }

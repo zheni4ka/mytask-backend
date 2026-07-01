@@ -14,6 +14,27 @@ namespace mytask_backend.Controllers
         {
             _stepService = stepService;
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateStepModel model)
+        {
+            await _stepService.InsertAsync(model);
+            return Ok();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            await _stepService.DeleteAsync(id);
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Edit([FromBody] EditStepModel model)
+        {
+            await _stepService.UpdateAsync(model);
+            return Ok();
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -32,25 +53,7 @@ namespace mytask_backend.Controllers
             return Ok(step);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateStepModel model)
-        {
-            await _stepService.InsertAsync(model);
-            return Ok();
-        }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] int id)
-        {
-            await _stepService.DeleteAsync(id);
-            return Ok();
-        }
 
-        [HttpPut]
-        public async Task<IActionResult> Edit([FromBody] EditStepModel model)
-        {
-            await _stepService.UpdateAsync(model);
-            return Ok();
-        }
     }
 }

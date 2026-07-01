@@ -2,6 +2,7 @@
 using business_logic.DTOs;
 using business_logic.Entities;
 using business_logic.Interfaces;
+using business_logic.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace business_logic.Services
 
         public async Task<StepDTO> GetStepAsync(int id)
         {
-            var step = await _stepRepository.GetByIdAsync(id);
+            var step = new StepSpecs.ById(id);
             return _mapper.Map<StepDTO>(step);
         }
 
@@ -46,6 +47,18 @@ namespace business_logic.Services
         {
             _stepRepository.Update(_mapper.Map<Step>(step));
             await _stepRepository.SaveAsync();
+        }
+
+        public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId)
+        {
+            var steps = new StepSpecs.ByIdWithAssignment(taskId);
+            return _mapper.Map<IEnumerable<StepDTO>>(steps);
+        }
+
+        public async Task<IEnumerable<StepDTO>> GetIncompleteStepsWithAssignment(int taskId)
+        {
+            var steps = new StepSpecs.IncompleteStepsForAssignment(taskId);
+            return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
     }
 }
