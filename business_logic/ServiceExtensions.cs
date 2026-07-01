@@ -18,11 +18,11 @@ namespace business_logic
             services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddCustomServices();
-        }
+        }   
 
         public static void AddCustomServices(this IServiceCollection services)
         {
-            services.AddScoped<IAssignmentService, AssignmentService>();
+            services.AddScoped<IAssignmentService, AssignmentService>(); 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStepService, StepService>();
         }

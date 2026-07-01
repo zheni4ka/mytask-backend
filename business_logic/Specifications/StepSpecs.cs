@@ -1,0 +1,27 @@
+﻿using Ardalis.Specification;
+using business_logic.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace business_logic.Specifications
+{
+    public class StepSpecs
+    {
+        public class ById : Specification<Step>
+        {
+            public ById(int id)
+            {
+                Query.Where(x => x.Id == id);
+            }
+        }
+
+        public class ByIdWithAssignment : Specification<Step>
+        {
+            public ByIdWithAssignment(int id)
+            {
+                Query.Where(x => x.AssignmentId == id).Include(x => x.Assignment);
+            }
+        }
+    }
+}
