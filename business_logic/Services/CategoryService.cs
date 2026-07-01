@@ -33,7 +33,7 @@ namespace business_logic.Services
 
         public async Task<CategoryDTO> GetCategoryAsync(int id)
         {
-            return _mapper.Map<CategoryDTO>(await _categoryRepo.GetByIdAsync(new CategorySpecs.ById(id)));
+            return _mapper.Map<CategoryDTO>(await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id)));
         }
 
         public async Task InsertAsync(CreateCategoryModel category)

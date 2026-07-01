@@ -33,7 +33,7 @@ namespace business_logic.Services
 
         public async Task<StepDTO> GetStepAsync(int id)
         {
-            var step = await _stepRepository.GetByIdAsync(new StepSpecs.ById(id));
+            var step = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ById(id));
             return _mapper.Map<StepDTO>(step);
         }
 

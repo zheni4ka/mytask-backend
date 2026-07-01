@@ -32,7 +32,7 @@ namespace business_logic.Services
 
         public async Task<AssignmentDTO> GetAssignmentAsync(int id)
         {
-            var obj = await _assignmentRepo.GetByIdAsync(new AssignmentSpecs.ById(id));
+            var obj = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id));
 
             if (obj == null) throw new KeyNotFoundException("Assignment not found");
 
@@ -51,10 +51,10 @@ namespace business_logic.Services
             await _assignmentRepo.SaveAsync();
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetLatestByCategoryId(int categoryId)
+        public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId)
         {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId));
-            return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
+            var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId));
+            return _mapper.Map<AssignmentDTO>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId)

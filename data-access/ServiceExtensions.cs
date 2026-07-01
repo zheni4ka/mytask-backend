@@ -3,10 +3,6 @@ using data_access.data;
 using data_access.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace data_access
 {
     public static class ServiceExtensions

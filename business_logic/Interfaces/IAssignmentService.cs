@@ -10,7 +10,7 @@ namespace business_logic.Interfaces
         Task DeleteAsync(int id);
         Task<AssignmentDTO> GetAssignmentAsync(int id);
         Task<IEnumerable<AssignmentDTO>> GetAll();  
-        Task<IEnumerable<AssignmentDTO>> GetLatestByCategoryId(int categoryId);
+        Task<AssignmentDTO> GetLatestByCategoryId(int categoryId);
         Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId);
         Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments();
         Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead);
