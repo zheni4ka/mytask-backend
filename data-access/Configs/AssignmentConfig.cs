@@ -14,6 +14,11 @@ namespace data_access.Configs
                    .WithMany(c => c.Assignments)
                    .HasForeignKey(x => x.CategoryId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(a => a.User)
+                   .WithMany(u => u.Assignments)
+                   .HasForeignKey(a => a.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

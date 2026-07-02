@@ -14,10 +14,6 @@ namespace data_access.Configs
             builder.ToTable("Steps");
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Title)
-                .IsRequired()
-                .HasMaxLength(100);
-
             builder.HasOne(x => x.Assignment)
                    .WithMany(a => a.Steps)
                    .HasForeignKey(x => x.AssignmentId)

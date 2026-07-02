@@ -10,6 +10,12 @@ namespace data_access.Configs
         {
             builder.ToTable("Categories");
             builder.HasKey(x => x.Id);
+
+            builder.HasOne(x => x.User)
+                .WithMany(x => x.Categories)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
