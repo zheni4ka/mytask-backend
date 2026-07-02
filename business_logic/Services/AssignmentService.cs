@@ -77,10 +77,11 @@ namespace business_logic.Services
 
         public async Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters)
         {
-            var spec = new AssignmentSpecs.AssignmentsByQuerySpec(pageParameters);
+            var dataSpec = new AssignmentSpecs.AssignmentsByQuerySpec(pageParameters);
+            var assignments = await _assignmentRepo.GetListBySpecAsync(dataSpec);
 
-            var assignments = await _assignmentRepo.GetListBySpecAsync(spec);
-            var totalCount = await _assignmentRepo.CountAsync(spec);
+            var countSpec = new AssignmentSpecs.AssignmentsByQueryCountSpec(pageParameters);
+            var totalCount = await _assignmentRepo.CountAsync(countSpec);
 
             var list = _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
 

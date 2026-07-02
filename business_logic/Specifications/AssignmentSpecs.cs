@@ -93,5 +93,17 @@ namespace business_logic.Specifications
             }
         }
 
+        public class AssignmentsByQueryCountSpec : Specification<Assignment>
+        {
+            public AssignmentsByQueryCountSpec(PageParameters pageParameters)
+            {
+                if (!string.IsNullOrEmpty(pageParameters.SearchTerm))
+                {
+                    Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) ||
+                                     a.Description.Contains(pageParameters.SearchTerm));
+                }
+            }
+        }
+
     }
 }

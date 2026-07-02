@@ -4,7 +4,7 @@ using System.Text;
 
 namespace business_logic.DTOs
 {
-    public class PagedResult<T>
+    public class PagedResult<T> where T : class
     {
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }
