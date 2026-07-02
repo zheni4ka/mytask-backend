@@ -75,5 +75,22 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
+        public async Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters)
+        {
+            var spec = new AssignmentSpecs.AssignmentsByQuerySpec(pageParameters);
+
+            var assignments = await _assignmentRepo.GetListBySpecAsync(spec);
+            var totalCount = await _assignmentRepo.CountAsync(spec);
+
+            var list = _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
+
+            return new PagedResult<AssignmentDTO>
+            {
+                TotalCount = totalCount,
+                PageNumber = pageParameters.pageNumber,
+                PageSize = pageParameters.pageSize,
+                Items = list,
+            };
+        }
     }
 }

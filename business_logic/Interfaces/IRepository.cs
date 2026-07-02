@@ -12,5 +12,6 @@ namespace business_logic.Interfaces
         void Update(TEntity entityToUpdate);
         Task DeleteByIdAsync(object id);
         Task SaveAsync();
+        Task<int> CountAsync(ISpecification<TEntity> spec);
     }
 }

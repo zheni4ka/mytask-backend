@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification;
+using business_logic.DTOs;
 using business_logic.Entities;
 using System;
 using System.Collections.Generic;
@@ -52,5 +53,45 @@ namespace business_logic.Specifications
                      .OrderBy(a => a.DueDate);
             }
         }
+
+        public class AssignmentsByQuerySpec : Specification<Assignment>
+        {
+            public AssignmentsByQuerySpec(PageParameters pageParameters)
+            {
+                if (!string.IsNullOrEmpty(pageParameters.SearchTerm))
+                {
+                    Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) || a.Description.Contains(pageParameters.SearchTerm));
+                }
+
+                if (!string.IsNullOrEmpty(pageParameters.SortBy))
+                {
+                    switch(pageParameters.SortBy)
+                    {
+                        case "title":
+                            
+                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Title);
+                            else Query.OrderBy(a => a.Title);
+                            
+                            break;
+                        case "description":
+                            
+                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Description);
+                            else Query.OrderBy(a => a.Description);
+                            
+                            break;
+                        case "duedate":
+                            
+                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.DueDate);
+                            else Query.OrderBy(a => a.DueDate);
+                            
+                            break;
+                    }
+                }
+
+                Query.Skip((pageParameters.pageNumber - 1) * pageParameters.pageSize)
+                     .Take(pageParameters.pageSize);
+            }
+        }
+
     }
 }

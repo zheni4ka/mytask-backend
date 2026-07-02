@@ -38,9 +38,10 @@ namespace mytask_backend.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<PagedResult<AssignmentDTO>>> GetAssignments([FromQuery] PageParameters parameters)
         {
-            return Ok(await _assignmentService.GetAll());
+            var result = await _assignmentService.GetPagedAssignmentsAsync(parameters);
+            return Ok(result);
         }
 
         [HttpGet("{id:int}")]

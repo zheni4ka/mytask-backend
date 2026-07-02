@@ -14,6 +14,7 @@ namespace business_logic.Interfaces
         Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId);
         Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments();
         Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead);
+        Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters);
 
     }
 }
