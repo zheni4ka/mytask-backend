@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using business_logic.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace data_access.data
 {
-    public class MyTaskDbContext : IdentityDbContext
+    public class MyTaskDbContext : IdentityDbContext<User>
     {
         public MyTaskDbContext(DbContextOptions<MyTaskDbContext> opt) : base(opt)
         {

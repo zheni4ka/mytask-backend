@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace business_logic.DTOs
+﻿namespace business_logic.DTOs
 {
     public class PageParameters
     {

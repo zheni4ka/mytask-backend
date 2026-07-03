@@ -3,9 +3,6 @@ using business_logic.DTOs;
 using business_logic.Entities;
 using business_logic.Interfaces;
 using business_logic.Specifications;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace business_logic.Services
 {

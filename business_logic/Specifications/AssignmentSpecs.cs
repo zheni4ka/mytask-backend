@@ -71,19 +71,18 @@ namespace business_logic.Specifications
                             
                             if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Title);
                             else Query.OrderBy(a => a.Title);
-                            
                             break;
+
                         case "description":
                             
                             if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Description);
                             else Query.OrderBy(a => a.Description);
-                            
                             break;
+
                         case "duedate":
                             
                             if(pageParameters.SortDescending) Query.OrderByDescending(a => a.DueDate);
                             else Query.OrderBy(a => a.DueDate);
-                            
                             break;
                     }
                 }

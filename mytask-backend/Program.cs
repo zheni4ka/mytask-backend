@@ -1,5 +1,6 @@
 using business_logic;
 using data_access;
+using mytask_backend.Helpers;
 using Scalar.AspNetCore;
 
 namespace mytask_backend
@@ -16,6 +17,7 @@ namespace mytask_backend
             builder.Services.AddBusinessLogicServices();
             builder.Services.AddDataAccessServices(connectionString);
             builder.Services.AddOpenApi();
+            builder.Services.AddJwtAuthentication(builder.Configuration);
             builder.Services.AddCustomServices();
 
             var app = builder.Build();

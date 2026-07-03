@@ -2,7 +2,6 @@
 using business_logic.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace business_logic
 {
@@ -25,6 +24,7 @@ namespace business_logic
             services.AddScoped<IAssignmentService, AssignmentService>(); 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStepService, StepService>();
+            services.AddScoped<IAuthService, AuthService>();
         }
     }
 }

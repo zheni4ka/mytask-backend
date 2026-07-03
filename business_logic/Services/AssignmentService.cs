@@ -90,7 +90,7 @@ namespace business_logic.Services
                 TotalCount = totalCount,
                 PageNumber = pageParameters.pageNumber,
                 PageSize = pageParameters.pageSize,
-                Items = list,
+                Items = list
             };
         }
     }

@@ -1,6 +1,8 @@
-﻿using business_logic.Interfaces;
+﻿using business_logic.Entities;
+using business_logic.Interfaces;
 using data_access.data;
 using data_access.Repository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 namespace data_access
@@ -20,6 +22,12 @@ namespace data_access
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+            })
+               .AddDefaultTokenProviders()
+               .AddEntityFrameworkStores<MyTaskDbContext>();
         }
     }
 }
