@@ -38,15 +38,19 @@ namespace business_logic.Services
             return _mapper.Map<AssignmentDTO>(obj);
         }
 
-        public async Task InsertAsync(CreateAssignmentModel assignment)
+        public async Task InsertAsync(CreateAssignmentModel assignment, string userId)
         {
-            await _assignmentRepo.InsertAsync(_mapper.Map<Assignment>(assignment));
+            var assignmentEntity = _mapper.Map<Assignment>(assignment);
+            assignmentEntity.UserId = userId;
+            await _assignmentRepo.InsertAsync(assignmentEntity);
             await _assignmentRepo.SaveAsync();
         }
 
-        public async Task UpdateAsync(EditAssignmentModel assignment)
+        public async Task UpdateAsync(EditAssignmentModel assignment, string userId)
         {
-            _assignmentRepo.Update(_mapper.Map<Assignment>(assignment));
+            var assignmentEntity = _mapper.Map<Assignment>(assignment);
+            assignmentEntity.UserId = userId;
+            _assignmentRepo.Update(assignmentEntity);
             await _assignmentRepo.SaveAsync();
         }
 

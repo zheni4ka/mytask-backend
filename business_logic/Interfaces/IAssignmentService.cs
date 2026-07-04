@@ -4,8 +4,8 @@ namespace business_logic.Interfaces
 {
     public interface IAssignmentService
     {
-        Task InsertAsync(CreateAssignmentModel assignment);
-        Task UpdateAsync(EditAssignmentModel assignment);
+        Task InsertAsync(CreateAssignmentModel assignment, string userId);
+        Task UpdateAsync(EditAssignmentModel assignment, string userId);
         Task DeleteAsync(int id);
         Task<AssignmentDTO> GetAssignmentAsync(int id);
         Task<IEnumerable<AssignmentDTO>> GetAll();  

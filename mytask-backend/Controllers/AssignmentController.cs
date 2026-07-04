@@ -2,6 +2,7 @@
 using business_logic.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace mytask_backend.Controllers
 {
@@ -23,12 +24,13 @@ namespace mytask_backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateAssignmentModel model)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var validationResult = await _createValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _assignmentService.InsertAsync(model);
+            await _assignmentService.InsertAsync(model, userId);
             return Ok();
         }
 
@@ -42,12 +44,13 @@ namespace mytask_backend.Controllers
         [HttpPut]
         public async Task<IActionResult> Edit([FromBody] EditAssignmentModel model) 
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var validationResult = await _editValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _assignmentService.UpdateAsync(model);
+            await _assignmentService.UpdateAsync(model, userId);
             return Ok();
         }
 

@@ -33,15 +33,19 @@ namespace business_logic.Services
             return _mapper.Map<CategoryDTO>(await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id)));
         }
 
-        public async Task InsertAsync(CreateCategoryModel category)
+        public async Task InsertAsync(CreateCategoryModel category, string userId)
         {
-            await _categoryRepo.InsertAsync(_mapper.Map<Category>(category));
+            var categoryEntity = _mapper.Map<Category>(category);
+            categoryEntity.UserId = userId;
+            await _categoryRepo.InsertAsync(categoryEntity);
             await _categoryRepo.SaveAsync();
         }
 
-        public async Task UpdateAsync(EditCategoryModel category)
+        public async Task UpdateAsync(EditCategoryModel category, string userId)
         {
-            _categoryRepo.Update(_mapper.Map<Category>(category));
+            var categoryEntity = _mapper.Map<Category>(category);
+            categoryEntity.UserId = userId;
+            _categoryRepo.Update(categoryEntity);
             await _categoryRepo.SaveAsync();
         }
 
