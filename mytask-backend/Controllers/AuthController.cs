@@ -1,6 +1,7 @@
-﻿using business_logic.DTOs;
-using business_logic.DTOs.User;
+﻿using Ardalis.Specification;
+using business_logic.DTOs;
 using business_logic.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mytask_backend.Controllers
@@ -10,10 +11,12 @@ namespace mytask_backend.Controllers
     public class AuthController : ControllerBase 
     {
         private readonly IAuthService _authService;
+        private readonly IValidator<RegisterModel> _registerValidator;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IValidator<RegisterModel> registerValidator)
         {
             _authService = authService;
+            _registerValidator = registerValidator;
         }
 
         [HttpPost("register")]
@@ -22,6 +25,12 @@ namespace mytask_backend.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var validationResult = await _registerValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
             }
 
             var result = await _authService.RegisterAsync(model);

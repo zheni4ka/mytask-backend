@@ -16,6 +16,7 @@ namespace business_logic
 
             services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
+
             services.AddCustomServices();
         }   
 

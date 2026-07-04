@@ -1,9 +1,6 @@
 ﻿using Ardalis.Specification;
 using business_logic.DTOs;
 using business_logic.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace business_logic.Specifications
 {

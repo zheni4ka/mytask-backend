@@ -1,6 +1,6 @@
 ﻿using business_logic.DTOs;
-using business_logic.DTOs.Assignment;
 using business_logic.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mytask_backend.Controllers
@@ -10,15 +10,24 @@ namespace mytask_backend.Controllers
     public class AssignmentController : Controller
     {
         private readonly IAssignmentService _assignmentService;
+        private readonly IValidator<CreateAssignmentModel> _createValidator;
+        private readonly IValidator<EditAssignmentModel> _editValidator;
 
-        public AssignmentController(IAssignmentService assignmentService)
+        public AssignmentController(IAssignmentService assignmentService, IValidator<EditAssignmentModel> editValidator, IValidator<CreateAssignmentModel> createValidator)
         {
             _assignmentService = assignmentService;
+            _editValidator = editValidator;
+            _createValidator = createValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateAssignmentModel model)
         {
+            var validationResult = await _createValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _assignmentService.InsertAsync(model);
             return Ok();
         }
@@ -33,6 +42,11 @@ namespace mytask_backend.Controllers
         [HttpPut]
         public async Task<IActionResult> Edit([FromBody] EditAssignmentModel model) 
         {
+            var validationResult = await _editValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _assignmentService.UpdateAsync(model);
             return Ok();
         }

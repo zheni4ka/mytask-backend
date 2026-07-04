@@ -1,5 +1,7 @@
-﻿using business_logic.DTOs;
+﻿using Ardalis.Specification;
+using business_logic.DTOs;
 using business_logic.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mytask_backend.Controllers
@@ -9,15 +11,23 @@ namespace mytask_backend.Controllers
     public class StepsController : Controller
     {
         private readonly IStepService _stepService;
-
-        public StepsController(IStepService stepService)
+        private readonly IValidator<CreateStepModel> _createStepValidator;
+        private readonly IValidator<EditStepModel> _editStepValidator;
+        public StepsController(IStepService stepService, IValidator<CreateStepModel> createStepValidator, IValidator<EditStepModel> editStepValidator)
         {
             _stepService = stepService;
+            _createStepValidator = createStepValidator;
+            _editStepValidator = editStepValidator;
         }
         
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStepModel model)
         {
+            var validationResult = await _createStepValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _stepService.InsertAsync(model);
             return Ok();
         }
@@ -32,6 +42,11 @@ namespace mytask_backend.Controllers
         [HttpPut]
         public async Task<IActionResult> Edit([FromBody] EditStepModel model)
         {
+            var validationResult = await _editStepValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _stepService.UpdateAsync(model);
             return Ok();
         }

@@ -1,8 +1,4 @@
 ﻿using business_logic.DTOs;
-using business_logic.DTOs.User;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace business_logic.Interfaces
 {

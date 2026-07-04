@@ -1,5 +1,7 @@
-﻿using business_logic.DTOs;
+﻿using Ardalis.Specification;
+using business_logic.DTOs;
 using business_logic.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace mytask_backend.Controllers
@@ -9,15 +11,24 @@ namespace mytask_backend.Controllers
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;
+        private readonly IValidator<CreateCategoryModel> _createCategoryValidator;
+        private readonly IValidator<EditCategoryModel> _editCategoryValidator;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService, IValidator<CreateCategoryModel> createCategoryValidator, IValidator<EditCategoryModel> editCategoryValidator)
         {
             this._categoryService = categoryService;
+            this._createCategoryValidator = createCategoryValidator;
+            this._editCategoryValidator = editCategoryValidator;
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryModel model)
         {
+            var validationResult = await _createCategoryValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _categoryService.InsertAsync(model);
             return Ok();
         }
@@ -25,6 +36,11 @@ namespace mytask_backend.Controllers
         [HttpPut]
         public async Task<IActionResult> Edit(EditCategoryModel model)
         {
+            var validationResult = await _editCategoryValidator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
             await _categoryService.UpdateAsync(model);
             return Ok();
         }

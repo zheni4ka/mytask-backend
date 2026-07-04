@@ -1,4 +1,4 @@
-﻿namespace business_logic.DTOs.Assignment
+﻿namespace business_logic.DTOs
 {
     public class EditAssignmentModel
     {

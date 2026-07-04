@@ -15,7 +15,6 @@ namespace data_access.Configs
                 .WithMany(x => x.Categories)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

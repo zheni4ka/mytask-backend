@@ -1,5 +1,4 @@
 ﻿using business_logic.DTOs;
-using business_logic.DTOs.User;
 using business_logic.Entities;
 using business_logic.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -44,7 +43,7 @@ namespace business_logic.Services
 
             var user = new User
             {
-                UserName = model.UserName, 
+                UserName = model.FirstName, 
                 Email = model.Email,
             };
 

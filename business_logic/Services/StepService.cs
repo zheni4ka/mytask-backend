@@ -52,7 +52,6 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 
-
         public async Task<IEnumerable<StepDTO>> GetIncompleteStepsWithAssignment(int taskId)
         {
             var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.IncompleteStepsForAssignment(taskId));
