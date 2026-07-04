@@ -3,6 +3,7 @@ using business_logic.DTOs;
 using business_logic.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace mytask_backend.Controllers
 {
@@ -24,24 +25,26 @@ namespace mytask_backend.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryModel model)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var validationResult = await _createCategoryValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _categoryService.InsertAsync(model);
+            await _categoryService.InsertAsync(model, userId);
             return Ok();
         }
 
         [HttpPut]
         public async Task<IActionResult> Edit(EditCategoryModel model)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var validationResult = await _editCategoryValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {
                 return BadRequest(validationResult.Errors);
             }
-            await _categoryService.UpdateAsync(model);
+            await _categoryService.UpdateAsync(model, userId);
             return Ok();
         }
 
