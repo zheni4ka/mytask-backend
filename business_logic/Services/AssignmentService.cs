@@ -21,6 +21,10 @@ namespace business_logic.Services
 
         public async Task DeleteAsync(int id)
         {
+            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id));
+            if(assignment == null)
+                throw new KeyNotFoundException("Assignment not found");
+
             try
             {
                 RecurringJob.RemoveIfExists($"Assignment_{id}");
@@ -57,7 +61,8 @@ namespace business_logic.Services
                 Description = model.Description,
                 DueDate = model.DueDate,
                 CategoryId = model.CategoryId,
-                UserId = userId
+                UserId = userId,
+                RefreshType = model.RefreshType
             };
 
             await _assignmentRepo.InsertAsync(assignment);
@@ -65,7 +70,7 @@ namespace business_logic.Services
 
             if (model.RefreshType.HasValue)
             {
-                string cron = await GetCronExpression(model.RefreshType.Value);
+                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
 
                 RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
                     $"Assignment_{assignment.Id}", 
@@ -86,7 +91,7 @@ namespace business_logic.Services
             _assignmentRepo.Update(assignmentEntity);
             await _assignmentRepo.SaveAsync();
 
-            await ManageRecurringJob(assignment.Id, existingAssignment.Refresh, assignment.RefreshType);
+            await ManageRecurringJob(assignment.Id, existingAssignment.RefreshType, assignment.RefreshType);
         }
 
         public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId)
@@ -138,7 +143,7 @@ namespace business_logic.Services
 
             if (oldRefreshType == null && newRefreshType.HasValue)
             {
-                string cron = await GetCronExpression(newRefreshType.Value);
+                string cron = await GetCronExpression(await GetAssignmentAsync(assignmentId));
                 RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
                     jobId,
                     job => job.GenerateTaskCopyAsync(assignmentId),
@@ -147,7 +152,7 @@ namespace business_logic.Services
             }
             else if (oldRefreshType.HasValue && newRefreshType.HasValue && oldRefreshType != newRefreshType)
             {
-                string cron = await GetCronExpression(newRefreshType.Value);
+                string cron = await GetCronExpression(await GetAssignmentAsync(assignmentId));
                 RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
                     jobId,
                     job => job.GenerateTaskCopyAsync(assignmentId),
@@ -160,13 +165,13 @@ namespace business_logic.Services
             }
         }
 
-        async Task<string> GetCronExpression(RefreshType type)
+        async Task<string> GetCronExpression(AssignmentDTO assignmentDTO)
         {
-            return type switch
+            return assignmentDTO.RefreshType switch
             {
-                RefreshType.Daily => Hangfire.Cron.Daily(),
-                RefreshType.Weekly => Hangfire.Cron.Weekly(),
-                RefreshType.Monthly => Hangfire.Cron.Monthly(),
+                RefreshType.Daily => Hangfire.Cron.Daily(assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
+                RefreshType.Weekly => Hangfire.Cron.Weekly(assignmentDTO.DueDate.DayOfWeek, assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
+                RefreshType.Monthly => Hangfire.Cron.Monthly(assignmentDTO.DueDate.Day, assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
                 _ => throw new ArgumentException("Unknown refresh type")
             };
         }

@@ -8,21 +8,21 @@ namespace business_logic
     {
         public ApplicationProfile()
         {
-            // Assignment maps - маппування Refresh поля на RefreshType в DTO
             CreateMap<CreateAssignmentModel, Assignment>()
-                .ForMember(dest => dest.Refresh, opt => opt.MapFrom(src => src.RefreshType))
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
                 .ReverseMap()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.Refresh));
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType));
 
             CreateMap<AssignmentDTO, Assignment>()
-                .ForMember(dest => dest.Refresh, opt => opt.MapFrom(src => src.RefreshType))
-                .ReverseMap()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.Refresh));
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType.ToString()))
+                .ReverseMap();
+           
 
             CreateMap<EditAssignmentModel, Assignment>()
-                .ForMember(dest => dest.Refresh, opt => opt.MapFrom(src => src.RefreshType))
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
                 .ReverseMap()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.Refresh));
+                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType));
 
             CreateMap<AssignmentDTO, CreateAssignmentModel>()
                 .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))

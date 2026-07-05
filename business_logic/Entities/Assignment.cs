@@ -18,6 +18,6 @@
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; } = false;
         public IEnumerable<Step> Steps { get; set; }
-        public RefreshType? Refresh { get; set; }
+        public RefreshType? RefreshType { get; set; }
     }
 }

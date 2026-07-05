@@ -19,6 +19,9 @@ namespace business_logic.Services
 
         public async Task DeleteAsync(int id)
         {
+            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id));
+            if (category == null)
+                throw new KeyNotFoundException("Category not found");
             await _categoryRepo.DeleteByIdAsync(id);
             await _categoryRepo.SaveAsync();
         }
@@ -30,13 +33,16 @@ namespace business_logic.Services
 
         public async Task<CategoryDTO> GetCategoryAsync(int id)
         {
-            return _mapper.Map<CategoryDTO>(await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id)));
+            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id));
+            if (category == null)
+                throw new KeyNotFoundException("Category not found");
+            return _mapper.Map<CategoryDTO>(category);
         }
 
         public async Task InsertAsync(CreateCategoryModel category, string userId)
         {
             var categoryEntity = _mapper.Map<Category>(category);
-            categoryEntity.UserId = userId;
+            categoryEntity.UserId = category.UserId;
             await _categoryRepo.InsertAsync(categoryEntity);
             await _categoryRepo.SaveAsync();
         }

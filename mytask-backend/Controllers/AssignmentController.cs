@@ -27,11 +27,6 @@ namespace mytask_backend.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("Error of user authentication");
-            }
-
             var validationResult = await _createValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {
