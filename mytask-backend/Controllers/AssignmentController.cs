@@ -1,6 +1,7 @@
 ﻿using business_logic.DTOs;
 using business_logic.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -25,6 +26,12 @@ namespace mytask_backend.Controllers
         public async Task<IActionResult> Create([FromBody] CreateAssignmentModel model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("Error of user authentication");
+            }
+
             var validationResult = await _createValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
             {

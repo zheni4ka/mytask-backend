@@ -1,4 +1,6 @@
-﻿namespace business_logic.DTOs
+﻿using business_logic.Entities;
+
+namespace business_logic.DTOs
 {
     public class CreateAssignmentModel
     {
@@ -6,6 +8,8 @@
         public string Description { get; set; }
         public int CategoryId { get; set; }
         public DateTime DueDate { get; set; }
+        public string UserId { get; set; } = string.Empty;
+        public RefreshType? RefreshType { get; set; }
         public bool IsCompleted { get; set; } = false;
     }
 }

@@ -1,11 +1,12 @@
 ﻿using business_logic.DTOs;
+using business_logic.Entities;
 
 namespace business_logic.Interfaces
 {
     public interface IAssignmentService
     {
-        Task InsertAsync(CreateAssignmentModel assignment, string userId);
-        Task UpdateAsync(EditAssignmentModel assignment, string userId);
+        Task InsertAsync(CreateAssignmentModel model, string userId);
+        Task UpdateAsync(EditAssignmentModel model, string userId);
         Task DeleteAsync(int id);
         Task<AssignmentDTO> GetAssignmentAsync(int id);
         Task<IEnumerable<AssignmentDTO>> GetAll();  
@@ -14,6 +15,5 @@ namespace business_logic.Interfaces
         Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments();
         Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead);
         Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters);
-
     }
 }

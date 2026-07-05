@@ -1,5 +1,11 @@
 ﻿namespace business_logic.Entities
 {
+    public enum RefreshType
+    {
+        Daily = 1,
+        Weekly,
+        Monthly
+    }
     public class Assignment
     {
         public int Id { get; set; }
@@ -12,5 +18,6 @@
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; } = false;
         public IEnumerable<Step> Steps { get; set; }
+        public RefreshType? Refresh { get; set; }
     }
 }
