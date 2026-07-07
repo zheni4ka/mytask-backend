@@ -13,12 +13,12 @@ namespace data_access.Configs
             builder.HasOne(x => x.Category)
                    .WithMany(c => c.Assignments)
                    .HasForeignKey(x => x.CategoryId)
-                   .OnDelete(DeleteBehavior.NoAction);
+                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.User)
                    .WithMany(u => u.Assignments)
                    .HasForeignKey(a => a.UserId)
-                   .OnDelete(DeleteBehavior.NoAction); 
+                   .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }

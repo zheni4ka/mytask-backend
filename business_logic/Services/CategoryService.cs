@@ -81,5 +81,30 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
+        public async Task CreateDefaultCategoriesAsync(string userId)
+        {
+            var defaultCategoryNames = new[] 
+            { 
+                "Робота", 
+                "Особисте", 
+                "Здоров'я", 
+                "Навчання",
+                "Спорт"
+            };
+
+            foreach (var categoryName in defaultCategoryNames)
+            {
+                var category = new Category
+                {
+                    Name = categoryName,
+                    UserId = userId
+                };
+
+                await _categoryRepo.InsertAsync(category);
+            }
+
+            await _categoryRepo.SaveAsync();
+        }
+
     }
 }

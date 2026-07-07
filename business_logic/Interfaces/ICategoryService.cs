@@ -13,5 +13,6 @@ namespace business_logic.Interfaces
         Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id);
         Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments();
         Task<IEnumerable<CategoryDTO>> GetEmptyCategories();
+        Task CreateDefaultCategoriesAsync(string userId);
     }
 }

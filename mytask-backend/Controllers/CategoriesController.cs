@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace mytask_backend.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : Controller

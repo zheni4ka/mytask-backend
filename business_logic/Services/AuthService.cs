@@ -13,11 +13,13 @@ namespace business_logic.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly ICategoryService _categoryService;
 
-        public AuthService(UserManager<User> userManager, IConfiguration configuration)
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, ICategoryService categoryService)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _categoryService = categoryService;
         }
 
         public async Task<AuthResponse> LoginAsync(LoginModel model)
@@ -63,6 +65,15 @@ namespace business_logic.Services
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = errors };
+            }
+            try
+            {
+                await _categoryService.CreateDefaultCategoriesAsync(user.Id);
+            }
+            catch (Exception ex)
+            {
+                await _userManager.DeleteAsync(user);
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = $"Failed to initialize user categories: {ex.Message}" };
             }
 
             var token = GenerateJwtToken(user);

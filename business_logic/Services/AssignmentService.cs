@@ -44,6 +44,9 @@ namespace business_logic.Services
         public async Task<IEnumerable<AssignmentDTO>> GetAll()
         {
             var list = await _assignmentRepo.GetAllAsync();
+            if(!list.Any())
+                throw new KeyNotFoundException("No assignments found");
+
             return _mapper.Map<IEnumerable<AssignmentDTO>>(list);
         }
 
@@ -97,6 +100,9 @@ namespace business_logic.Services
         public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId)
         {
             var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId));
+            if (assignments == null)
+                throw new KeyNotFoundException("No assignments found for the given category");
+
             return _mapper.Map<AssignmentDTO>(assignments);
         }
 

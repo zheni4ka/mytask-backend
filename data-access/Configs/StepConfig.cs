@@ -14,7 +14,7 @@ namespace data_access.Configs
             builder.HasOne(x => x.Assignment)
                    .WithMany(a => a.Steps)
                    .HasForeignKey(x => x.AssignmentId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
