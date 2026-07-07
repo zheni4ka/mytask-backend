@@ -5,27 +5,37 @@ namespace business_logic.Specifications
 {
     public class StepSpecs
     {
+
+
         public class ById : Specification<Step>
         {
-            public ById(int id)
+            public ById(int id, string userId)
             {
-                Query.Where(x => x.Id == id);
+                Query.Where(x => x.Assignment.UserId == userId);
+            }
+        }
+
+        public class All : Specification<Step>
+        {
+            public All(string userId)
+            {
+                Query.Where(x => x.Assignment.UserId == userId);
             }
         }
 
         public class ByIdWithAssignment : Specification<Step>
         {
-            public ByIdWithAssignment(int id)
+            public ByIdWithAssignment(int id, string userId)
             {
-                Query.Where(x => x.AssignmentId == id).Include(x => x.Assignment);
+                Query.Where(x => x.AssignmentId == id && x.Assignment.UserId == userId).Include(x => x.Assignment);
             }
         }
 
         public class IncompleteStepsForAssignment : Specification<Step>
         {
-            public IncompleteStepsForAssignment(int assignmentId)
+            public IncompleteStepsForAssignment(int assignmentId, string userId)
             {
-                Query.Where(s => s.AssignmentId == assignmentId)
+                Query.Where(s => s.AssignmentId == assignmentId && s.Assignment.UserId == userId)
                      .OrderBy(s => s.Id).Where(x => !x.IsCompleted);
             }
         }

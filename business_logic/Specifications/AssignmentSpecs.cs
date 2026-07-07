@@ -55,9 +55,11 @@ namespace business_logic.Specifications
         {
             public AssignmentsByQuerySpec(PageParameters pageParameters, string userId)
             {
+                Query.Where(a => a.UserId == userId);
+
                 if (!string.IsNullOrEmpty(pageParameters.SearchTerm))
                 {
-                    Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) || a.Description.Contains(pageParameters.SearchTerm) && a.UserId == userId);
+                    Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) || a.Description.Contains(pageParameters.SearchTerm));
                 }
 
                 if (!string.IsNullOrEmpty(pageParameters.SortBy))
