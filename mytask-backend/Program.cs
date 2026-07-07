@@ -29,6 +29,17 @@ namespace mytask_backend
             builder.Services.AddOpenApi();
             builder.Services.AddJwtAuthentication(builder.Configuration);
             builder.Services.AddCustomServices();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAngularDev",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200") 
+                               .AllowAnyHeader()
+                               .AllowAnyMethod()
+                               .AllowCredentials(); 
+                    });
+            });
 
             var app = builder.Build();
 
@@ -42,10 +53,10 @@ namespace mytask_backend
 
             app.UseAuthentication();
 
+            app.UseCors("AllowAngularDev");
             app.UseAuthorization();
 
             app.MapControllers();
-            app.UseCors();
 
             app.UseHangfireDashboard();
 

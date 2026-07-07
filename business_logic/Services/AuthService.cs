@@ -23,8 +23,13 @@ namespace business_logic.Services
         public async Task<AuthResponse> LoginAsync(LoginModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid email or password." };
+            }
 
-            if(user == null)
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!isPasswordValid)
             {
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid email or password." };
             }
@@ -36,7 +41,7 @@ namespace business_logic.Services
 
         public async Task<AuthResponse> RegisterAsync(RegisterModel model)
         {
-            if (model.Password != model.ConfirmPassword)
+            if (!model.Password.Equals(model.ConfirmPassword))
             {
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Passwords do not match." };
             }
@@ -63,7 +68,7 @@ namespace business_logic.Services
         private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"];
+            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
 
             var claims = new List<Claim>
             {
@@ -71,14 +76,16 @@ namespace business_logic.Services
                 new Claim(ClaimTypes.Email, user.Email!)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            
+            const int TokenExpirationDays = 3;
 
             var tokenDescriptor = new JwtSecurityToken(
                 issuer: jwtSettings["ValidIssuer"],
                 audience: jwtSettings["ValidAudience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(3),
+                expires: DateTime.Now.AddDays(TokenExpirationDays),
                 signingCredentials: creds
             );
 

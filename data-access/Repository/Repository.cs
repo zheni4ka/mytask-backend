@@ -8,8 +8,8 @@ namespace data_access.Repository
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        internal MyTaskDbContext context;
-        internal DbSet<TEntity> dbSet;
+        private readonly MyTaskDbContext context;
+        private readonly DbSet<TEntity> dbSet;
 
         public Repository(MyTaskDbContext context)
         {

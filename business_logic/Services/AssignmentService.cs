@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using business_logic.DTOs;
 using business_logic.Entities;
+using business_logic.Helpers;
 using business_logic.Interfaces;
 using business_logic.Specifications;
 using Hangfire;
@@ -12,11 +13,13 @@ namespace business_logic.Services
     {
         private readonly IRepository<Assignment> _assignmentRepo;
         private readonly IMapper _mapper;
+        private readonly RecurringJobHelper _recurringJobService;
 
-        public AssignmentService(IRepository<Assignment> repository, IMapper mapper)
+        public AssignmentService(IRepository<Assignment> repository, IMapper mapper, RecurringJobHelper recurringJobService)
         {
             this._assignmentRepo = repository;
             this._mapper = mapper;
+            this._recurringJobService = recurringJobService;
         }
 
         public async Task DeleteAsync(int id)
@@ -27,7 +30,7 @@ namespace business_logic.Services
 
             try
             {
-                RecurringJob.RemoveIfExists($"Assignment_{id}");
+                _recurringJobService.RemoveRecurringJob(id);
             }
             catch
             {
@@ -72,17 +75,14 @@ namespace business_logic.Services
             {
                 string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
 
-                RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
-                    $"Assignment_{assignment.Id}", 
-                    job => job.GenerateTaskCopyAsync(assignment.Id), 
-                    cron 
-                );
+                _recurringJobService.ScheduleRecurringJob(assignment.Id, cron);
             }
         }
 
         public async Task UpdateAsync(EditAssignmentModel assignment, string userId)
         {
             var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignment.Id));
+
             if (existingAssignment == null)
                 throw new KeyNotFoundException("Assignment not found");
 
@@ -140,28 +140,21 @@ namespace business_logic.Services
         private async Task ManageRecurringJob(int assignmentId, RefreshType? oldRefreshType, RefreshType? newRefreshType)
         {
             string jobId = $"Assignment_{assignmentId}";
+            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignmentId));
 
             if (oldRefreshType == null && newRefreshType.HasValue)
             {
-                string cron = await GetCronExpression(await GetAssignmentAsync(assignmentId));
-                RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
-                    jobId,
-                    job => job.GenerateTaskCopyAsync(assignmentId),
-                    cron
-                );
+                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
+                _recurringJobService.ScheduleRecurringJob(assignmentId, cron);
             }
             else if (oldRefreshType.HasValue && newRefreshType.HasValue && oldRefreshType != newRefreshType)
             {
-                string cron = await GetCronExpression(await GetAssignmentAsync(assignmentId));
-                RecurringJob.AddOrUpdate<RefreshingAssignmentJob>(
-                    jobId,
-                    job => job.GenerateTaskCopyAsync(assignmentId),
-                    cron
-                );
+                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
+                _recurringJobService.ScheduleRecurringJob(assignmentId, cron);
             }
             else if (oldRefreshType.HasValue && newRefreshType == null)
             {
-                RecurringJob.RemoveIfExists(jobId);
+                _recurringJobService.RemoveRecurringJob(assignmentId);
             }
         }
 

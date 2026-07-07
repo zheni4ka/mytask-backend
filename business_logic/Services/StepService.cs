@@ -19,6 +19,10 @@ namespace business_logic.Services
 
         public async Task DeleteAsync(int id)
         {
+            var step = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ById(id));
+
+            if (step == null) { throw new KeyNotFoundException("Step not found"); }
+
             await _stepRepository.DeleteByIdAsync(id);
             await _stepRepository.SaveAsync();
         }
@@ -31,6 +35,9 @@ namespace business_logic.Services
         public async Task<StepDTO> GetStepAsync(int id)
         {
             var step = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ById(id));
+
+            if (step == null) { throw new KeyNotFoundException("Step not found"); }
+
             return _mapper.Map<StepDTO>(step);
         }
 

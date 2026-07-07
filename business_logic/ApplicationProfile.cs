@@ -8,25 +8,10 @@ namespace business_logic
     {
         public ApplicationProfile()
         {
-            CreateMap<CreateAssignmentModel, Assignment>()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
-                .ReverseMap()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType));
-
-            CreateMap<AssignmentDTO, Assignment>()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType.ToString()))
-                .ReverseMap();
-           
-
-            CreateMap<EditAssignmentModel, Assignment>()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
-                .ReverseMap()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType));
-
-            CreateMap<AssignmentDTO, CreateAssignmentModel>()
-                .ForMember(dest => dest.RefreshType, opt => opt.MapFrom(src => src.RefreshType))
-                .ReverseMap();
+            CreateMap<CreateAssignmentModel, Assignment>().ReverseMap(); 
+            CreateMap<AssignmentDTO, Assignment>().ReverseMap();
+            CreateMap<EditAssignmentModel, Assignment>().ReverseMap();
+            CreateMap<AssignmentDTO, CreateAssignmentModel>().ReverseMap();
 
             CreateMap<CreateCategoryModel, Category>().ReverseMap();
             CreateMap<CategoryDTO, Category>().ReverseMap();
