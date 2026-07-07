@@ -25,7 +25,7 @@ namespace business_logic.Services
                 throw new KeyNotFoundException("Category not found");
 
             var hasAssignments = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories(userId));
-            if (hasAssignments.Any(x => x.Id == id))
+            if (!hasAssignments.Any(x => x.Id == id))
             {
                 throw new InvalidOperationException("Unable to delete category because it contains assignments.");
             }

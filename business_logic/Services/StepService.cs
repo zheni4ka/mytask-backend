@@ -9,11 +9,14 @@ namespace business_logic.Services
     public class StepService : IStepService
     {
         private readonly IRepository<Step> _stepRepository;
+        private readonly IRepository<Assignment> _assignmentRepository;
         private readonly IMapper _mapper;
 
-        public StepService(IRepository<Step> stepRepository, IMapper mapper)
+
+        public StepService(IRepository<Step> stepRepository, IRepository<Assignment> assignmentRepository, IMapper mapper)
         {
             _stepRepository = stepRepository;
+            _assignmentRepository = assignmentRepository;
             _mapper = mapper;
         }
 
@@ -47,13 +50,14 @@ namespace business_logic.Services
 
         public async Task InsertAsync(CreateStepModel step, string userId)
         {
-            var stepEntity = _mapper.Map<Step>(step);
+            var assignment = await _assignmentRepository.GetItemBySpecAsync(new AssignmentSpecs.ById(step.AssignmentId, userId));
 
-            var assignment = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ByIdWithAssignment(step.AssignmentId, userId));
             if (assignment == null)
             {
                 throw new KeyNotFoundException("Task not found or you are not the owner");
             }
+
+            var stepEntity = _mapper.Map<Step>(step);
 
             if (stepEntity.Assignment.UserId != userId)
             {
