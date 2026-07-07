@@ -9,8 +9,8 @@
 
         public int pageSize 
         { 
-            get => _pageSize; 
-            set => _pageSize = (value > maxPageSize) ? maxPageSize : value;
+            get => _pageSize;
+            set => _pageSize = (value <= 0) ? 10 : (value > maxPageSize ? maxPageSize : value);
         }
 
         public string SearchTerm { get; set; } = string.Empty;

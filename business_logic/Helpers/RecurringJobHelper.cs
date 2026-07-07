@@ -19,14 +19,20 @@ namespace business_logic.Helpers
 
         public async Task GenerateTaskCopyAsync(int originalId)
         {
-            var newAssignmentModel = await _assignmentRepo.GetByIdAsync(originalId);
+            var originalTask = await _assignmentRepo.GetByIdAsync(originalId);
+            if (originalTask == null) return;
 
-            newAssignmentModel.DueDate = CalculateNextDueDate(newAssignmentModel.DueDate, newAssignmentModel.RefreshType);
-            newAssignmentModel.RefreshType = newAssignmentModel.RefreshType;
-            newAssignmentModel.IsCompleted = false;
-            newAssignmentModel.UserId = newAssignmentModel.UserId;
+            var newTask = new Assignment
+            {
+                Title = originalTask.Title,
+                Description = originalTask.Description,
+                CategoryId = originalTask.CategoryId,
+                UserId = originalTask.UserId, 
+                DueDate = CalculateNextDueDate(originalTask.DueDate, originalTask.RefreshType),
+            };
 
-            await _assignmentRepo.InsertAsync(newAssignmentModel);
+            await _assignmentRepo.InsertAsync(newTask);
+            await _assignmentRepo.SaveAsync();
         }
 
         public void RemoveRecurringJob(int assignmentId)

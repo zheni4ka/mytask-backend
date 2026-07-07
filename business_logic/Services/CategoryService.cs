@@ -3,6 +3,7 @@ using business_logic.DTOs;
 using business_logic.Entities;
 using business_logic.Interfaces;
 using business_logic.Specifications;
+using static business_logic.Specifications.AssignmentSpecs;
 
 namespace business_logic.Services
 {
@@ -22,6 +23,13 @@ namespace business_logic.Services
             var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id, userId));
             if (category == null)
                 throw new KeyNotFoundException("Category not found");
+
+            var hasAssignments = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories(userId));
+            if (hasAssignments.Any(x => x.Id == id))
+            {
+                throw new InvalidOperationException("Unable to delete category because it contains assignments.");
+            }
+
             await _categoryRepo.DeleteByIdAsync(id);
             await _categoryRepo.SaveAsync();
         }

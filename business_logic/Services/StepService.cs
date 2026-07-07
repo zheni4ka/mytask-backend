@@ -49,7 +49,13 @@ namespace business_logic.Services
         {
             var stepEntity = _mapper.Map<Step>(step);
 
-            if(stepEntity.Assignment.UserId != userId)
+            var assignment = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ByIdWithAssignment(step.AssignmentId, userId));
+            if (assignment == null)
+            {
+                throw new KeyNotFoundException("Task not found or you are not the owner");
+            }
+
+            if (stepEntity.Assignment.UserId != userId)
             {
                 throw new UnauthorizedAccessException("You are not the owner of this assignment");
             }
