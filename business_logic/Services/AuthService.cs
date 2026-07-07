@@ -46,6 +46,11 @@ namespace business_logic.Services
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Passwords do not match." };
             }
 
+            if(await _userManager.FindByEmailAsync(model.Email) != null)
+            {
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Email is already in use." };
+            }
+
             var user = new User
             {
                 UserName = model.FirstName, 

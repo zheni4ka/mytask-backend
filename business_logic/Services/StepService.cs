@@ -29,7 +29,11 @@ namespace business_logic.Services
 
         public async Task<IEnumerable<StepDTO>> GetAll()
         {
-            return _mapper.Map<IEnumerable<StepDTO>>(await _stepRepository.GetAllAsync());
+            var steps = await _stepRepository.GetAllAsync();
+            if(!steps.Any()) {
+                throw new KeyNotFoundException("No steps found");
+            }
+            return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 
         public async Task<StepDTO> GetStepAsync(int id)
@@ -56,12 +60,18 @@ namespace business_logic.Services
         public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId)
         {
             var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.ByIdWithAssignment(taskId));
+            if(!steps.Any()) {
+                throw new KeyNotFoundException("No steps found for the given assignment");
+            }
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 
         public async Task<IEnumerable<StepDTO>> GetIncompleteStepsWithAssignment(int taskId)
         {
             var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.IncompleteStepsForAssignment(taskId));
+            if(!steps.Any()) {
+                throw new KeyNotFoundException("No incomplete steps found for the given assignment");
+            }
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
     }

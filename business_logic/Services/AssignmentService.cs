@@ -34,7 +34,7 @@ namespace business_logic.Services
             }
             catch
             {
-                //Here will be global exception handler, which i will complete later
+                throw new KeyNotFoundException("Recurring job not found for the assignment");
             }
 
             await _assignmentRepo.DeleteByIdAsync(id);
@@ -103,18 +103,30 @@ namespace business_logic.Services
         public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId)
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.ByCategoryId(categoryId));
+
+            if(!assignments.Any())
+                throw new KeyNotFoundException("No assignments found for the given category");
+
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments()
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments());
+
+            if(!assignments.Any())
+                throw new KeyNotFoundException("No overdue assignments found");
+
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead)
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead));
+
+            if(!assignments.Any())
+                throw new KeyNotFoundException("No upcoming assignments found");
+
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 

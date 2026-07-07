@@ -42,7 +42,7 @@ namespace business_logic.Services
         public async Task InsertAsync(CreateCategoryModel category, string userId)
         {
             var categoryEntity = _mapper.Map<Category>(category);
-            categoryEntity.UserId = category.UserId;
+            categoryEntity.UserId = userId;
             await _categoryRepo.InsertAsync(categoryEntity);
             await _categoryRepo.SaveAsync();
         }
@@ -58,18 +58,26 @@ namespace business_logic.Services
         public async Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id)
         {
             var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.ByLatestAssignments(id));
+            if(!categories.Any())
+                throw new KeyNotFoundException("No categories found for the given assignment");
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments()
         {
             var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.CategoriesWithActiveTasks());
+
+            if(!categories.Any()) throw new KeyNotFoundException("No categories with active tasks found"); 
+
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories()
         {
             var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories());
+
+            if(!categories.Any()) throw new KeyNotFoundException("No empty categories found");
+
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 

@@ -4,6 +4,7 @@ using Hangfire;
 using Microsoft.OpenApi;
 using mytask_backend.Helpers;
 using Scalar.AspNetCore;
+using mytask_backend.Middlewares;
 
 namespace mytask_backend
 {
@@ -41,6 +42,10 @@ namespace mytask_backend
                     });
             });
 
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -51,9 +56,10 @@ namespace mytask_backend
 
             app.UseHttpsRedirection();
 
-            app.UseAuthentication();
 
             app.UseCors("AllowAngularDev");
+            app.UseAuthentication();
+
             app.UseAuthorization();
 
             app.MapControllers();
