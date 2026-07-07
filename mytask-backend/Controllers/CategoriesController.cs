@@ -8,6 +8,7 @@ using System.Security.Claims;
 
 namespace mytask_backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : Controller
@@ -52,38 +53,44 @@ namespace mytask_backend.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await _categoryService.DeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _categoryService.DeleteAsync(id, userId);
             return Ok();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _categoryService.GetAll());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _categoryService.GetAll(userId));
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(await _categoryService.GetCategoryAsync(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _categoryService.GetCategoryAsync(id, userId));
         }
 
         [HttpGet("latest/{id:int}")]
         public async Task<IActionResult> GetByLatestAssignments(int id)
         {
-            return Ok(await _categoryService.GetByLatestAssignments(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _categoryService.GetByLatestAssignments(id, userId));
         }
 
         [HttpGet("with-assignments")]
         public async Task<IActionResult> GetCategoriesWithAssignments()
         {
-            return Ok(await _categoryService.GetCategoriesWithAssignments());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _categoryService.GetCategoriesWithAssignments(userId));
         }
 
         [HttpGet("empty")]
         public async Task<IActionResult> GetEmptyCategories()
         {
-            return Ok(await _categoryService.GetEmptyCategories());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _categoryService.GetEmptyCategories(userId));
         }
 
     }

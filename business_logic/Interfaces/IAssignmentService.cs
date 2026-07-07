@@ -7,13 +7,13 @@ namespace business_logic.Interfaces
     {
         Task InsertAsync(CreateAssignmentModel model, string userId);
         Task UpdateAsync(EditAssignmentModel model, string userId);
-        Task DeleteAsync(int id);
-        Task<AssignmentDTO> GetAssignmentAsync(int id);
-        Task<IEnumerable<AssignmentDTO>> GetAll();  
-        Task<AssignmentDTO> GetLatestByCategoryId(int categoryId);
-        Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId);
-        Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments();
-        Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead);
-        Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters);
+        Task DeleteAsync(int id, string userId);
+        Task<AssignmentDTO> GetAssignmentAsync(int id, string userId);
+        Task<IEnumerable<AssignmentDTO>> GetAll(string userId);  
+        Task<AssignmentDTO> GetLatestByCategoryId(int categoryId, string userId);
+        Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId , string userId);
+        Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments(string userId);
+        Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead, string userId);
+        Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters, string userId);
     }
 }

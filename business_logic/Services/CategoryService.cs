@@ -17,23 +17,24 @@ namespace business_logic.Services
             this._mapper = mapper;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, string userId)
         {
-            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id));
+            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id, userId));
             if (category == null)
                 throw new KeyNotFoundException("Category not found");
             await _categoryRepo.DeleteByIdAsync(id);
             await _categoryRepo.SaveAsync();
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetAll()
+        public async Task<IEnumerable<CategoryDTO>> GetAll(string userId)
         {
-            return _mapper.Map<IEnumerable<CategoryDTO>>(await _categoryRepo.GetAllAsync());
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.All(userId));
+            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
-        public async Task<CategoryDTO> GetCategoryAsync(int id)
+        public async Task<CategoryDTO> GetCategoryAsync(int id, string userId)
         {
-            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id));
+            var category = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(id, userId));
             if (category == null)
                 throw new KeyNotFoundException("Category not found");
             return _mapper.Map<CategoryDTO>(category);
@@ -55,26 +56,26 @@ namespace business_logic.Services
             await _categoryRepo.SaveAsync();
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id)
+        public async Task<IEnumerable<CategoryDTO>> GetByLatestAssignments(int id, string userId)
         {
-            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.ByLatestAssignments(id));
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.ByLatestAssignments(id, userId));
             if(!categories.Any())
                 throw new KeyNotFoundException("No categories found for the given assignment");
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments()
+        public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments(string userId)
         {
-            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.CategoriesWithActiveTasks());
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.CategoriesWithActiveTasks(userId));
 
             if(!categories.Any()) throw new KeyNotFoundException("No categories with active tasks found"); 
 
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories()
+        public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories(string userId)
         {
-            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories());
+            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories(userId));
 
             if(!categories.Any()) throw new KeyNotFoundException("No empty categories found");
 

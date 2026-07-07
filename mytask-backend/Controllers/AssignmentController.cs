@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace mytask_backend.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AssignmentController : Controller
@@ -39,7 +40,8 @@ namespace mytask_backend.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await _assignmentService.DeleteAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await _assignmentService.DeleteAsync(id, userId);
             return Ok();
         }
 
@@ -59,38 +61,44 @@ namespace mytask_backend.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<PagedResult<AssignmentDTO>>> GetAssignments([FromQuery] PageParameters parameters)
         {
-            var result = await _assignmentService.GetPagedAssignmentsAsync(parameters);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _assignmentService.GetPagedAssignmentsAsync(parameters, userId);
             return Ok(result);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            return Ok(await _assignmentService.GetAssignmentAsync(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _assignmentService.GetAssignmentAsync(id, userId));
         }
 
         [HttpGet("latest/{id:int}")]
         public async Task<IActionResult> GetLatestByCategoryId(int id)
         {
-            return Ok(await _assignmentService.GetLatestByCategoryId(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _assignmentService.GetLatestByCategoryId(id, userId));
         }
 
         [HttpGet("by-category/{id:int}")]
         public async Task<IActionResult> GetByCategoryId(int id)
         {
-            return Ok(await _assignmentService.GetByCategoryId(id));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _assignmentService.GetByCategoryId(id, userId));
         }
 
         [HttpGet("overdue")]
         public async Task<IActionResult> GetOverdueAssignments()
         {
-            return Ok(await _assignmentService.GetOverdueAssignments());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _assignmentService.GetOverdueAssignments(userId));
         }
 
         [HttpGet("upcoming/{daysAhead:int}")]
         public async Task<IActionResult> GetUpcomingAssignments(int daysAhead)
         {
-            return Ok(await _assignmentService.GetUpcomingAssignments(daysAhead));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _assignmentService.GetUpcomingAssignments(daysAhead, userId));
         }
 
     }

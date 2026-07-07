@@ -22,9 +22,9 @@ namespace business_logic.Services
             this._recurringJobService = recurringJobService;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, string userId)
         {
-            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id));
+            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id, userId));
             if(assignment == null)
                 throw new KeyNotFoundException("Assignment not found");
 
@@ -41,7 +41,7 @@ namespace business_logic.Services
             await _assignmentRepo.SaveAsync();
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetAll()
+        public async Task<IEnumerable<AssignmentDTO>> GetAll(string userId)
         {
             var list = await _assignmentRepo.GetAllAsync();
             if(!list.Any())
@@ -50,9 +50,9 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(list);
         }
 
-        public async Task<AssignmentDTO> GetAssignmentAsync(int id)
+        public async Task<AssignmentDTO> GetAssignmentAsync(int id, string userId)
         {
-            var obj = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id));
+            var obj = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id, userId));
 
             if (obj == null) throw new KeyNotFoundException("Assignment not found");
 
@@ -84,7 +84,7 @@ namespace business_logic.Services
 
         public async Task UpdateAsync(EditAssignmentModel assignment, string userId)
         {
-            var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignment.Id));
+            var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignment.Id, userId));
 
             if (existingAssignment == null)
                 throw new KeyNotFoundException("Assignment not found");
@@ -94,21 +94,21 @@ namespace business_logic.Services
             _assignmentRepo.Update(assignmentEntity);
             await _assignmentRepo.SaveAsync();
 
-            await ManageRecurringJob(assignment.Id, existingAssignment.RefreshType, assignment.RefreshType);
+            await ManageRecurringJob(assignment.Id, userId, existingAssignment.RefreshType, assignment.RefreshType);
         }
 
-        public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId)
+        public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId, string userId)
         {
-            var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId));
+            var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId, userId));
             if (assignments == null)
                 throw new KeyNotFoundException("No assignments found for the given category");
 
             return _mapper.Map<AssignmentDTO>(assignments);
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId)
+        public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId, string userId)
         {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.ByCategoryId(categoryId));
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.ByCategoryId(categoryId, userId));
 
             if(!assignments.Any())
                 throw new KeyNotFoundException("No assignments found for the given category");
@@ -116,9 +116,9 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments()
+        public async Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments(string userId)
         {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments());
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments(userId));
 
             if(!assignments.Any())
                 throw new KeyNotFoundException("No overdue assignments found");
@@ -126,9 +126,9 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead)
+        public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead, string userId)
         {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead));
+            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead, userId));
 
             if(!assignments.Any())
                 throw new KeyNotFoundException("No upcoming assignments found");
@@ -136,12 +136,12 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
-        public async Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters)
+        public async Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters, string userId)
         {
-            var dataSpec = new AssignmentSpecs.AssignmentsByQuerySpec(pageParameters);
+            var dataSpec = new AssignmentSpecs.AssignmentsByQuerySpec(pageParameters, userId);
             var assignments = await _assignmentRepo.GetListBySpecAsync(dataSpec);
 
-            var countSpec = new AssignmentSpecs.AssignmentsByQueryCountSpec(pageParameters);
+            var countSpec = new AssignmentSpecs.AssignmentsByQueryCountSpec(pageParameters, userId);
             var totalCount = await _assignmentRepo.CountAsync(countSpec);
 
             var list = _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
@@ -155,10 +155,10 @@ namespace business_logic.Services
             };
         }
 
-        private async Task ManageRecurringJob(int assignmentId, RefreshType? oldRefreshType, RefreshType? newRefreshType)
+        private async Task ManageRecurringJob(int assignmentId, string userId, RefreshType? oldRefreshType, RefreshType? newRefreshType)
         {
             string jobId = $"Assignment_{assignmentId}";
-            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignmentId));
+            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignmentId, userId));
 
             if (oldRefreshType == null && newRefreshType.HasValue)
             {
