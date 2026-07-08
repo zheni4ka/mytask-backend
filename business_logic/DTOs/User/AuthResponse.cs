@@ -1,6 +1,4 @@
-﻿
-
-namespace business_logic.DTOs
+﻿namespace business_logic.DTOs
 {
     public class AuthResponse
     {

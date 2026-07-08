@@ -83,6 +83,8 @@ namespace mytask_backend.Controllers
         public async Task<IActionResult> GetCategoriesWithAssignments()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
             return Ok(await _categoryService.GetCategoriesWithAssignments(userId));
         }
 

@@ -6,6 +6,7 @@ using mytask_backend.Helpers;
 using Scalar.AspNetCore;
 using mytask_backend.Middlewares;
 
+
 namespace mytask_backend
 {
     public class Program

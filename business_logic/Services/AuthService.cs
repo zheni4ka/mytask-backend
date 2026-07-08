@@ -84,7 +84,10 @@ namespace business_logic.Services
         private string GenerateJwtToken(User user)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret not configured");
+            var secretKey = jwtSettings["Secret"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
+
 
             var claims = new List<Claim>
             {
@@ -94,12 +97,12 @@ namespace business_logic.Services
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            
+
             const int TokenExpirationDays = 3;
 
             var tokenDescriptor = new JwtSecurityToken(
-                issuer: jwtSettings["ValidIssuer"],
-                audience: jwtSettings["ValidAudience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.Now.AddDays(TokenExpirationDays),
                 signingCredentials: creds

@@ -110,9 +110,6 @@ namespace business_logic.Services
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.ByCategoryId(categoryId, userId));
 
-            if(!assignments.Any())
-                throw new KeyNotFoundException("No assignments found for the given category");
-
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 

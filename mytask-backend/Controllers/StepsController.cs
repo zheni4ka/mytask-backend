@@ -69,13 +69,15 @@ namespace mytask_backend.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var step = await _stepService.GetStepAsync(id, userId);
-            if (step == null)
-            {
-                return NotFound();
-            }
             return Ok(step);
         }
 
+        [HttpGet("by-assignment/{taskId:int}")]
+        public async Task<IActionResult> GetByAssignmentId(int taskId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Ok(await _stepService.GetByAssigmentId(taskId, userId));
+        }
 
 
     }
