@@ -25,10 +25,12 @@
 		<PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
 		<PackageReference Include="Ardalis.Specification" Version="8.0.0" />
 </ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\business_logic\BLL.csproj" />
+</ItemGroup>
 	
-	<ItemGroup>
-		<ProjectReference Include="..\business_logic\business_logic.csproj" />
-	</ItemGroup>
+
 	
 
 </Project>

@@ -10,11 +10,13 @@ namespace business_logic.Services
     public class CategoryService : ICategoryService
     {
         private readonly IRepository<Category> _categoryRepo;
+        private readonly IRepository<Assignment> _assignmentRepo;
         private readonly IMapper _mapper;
 
-        public CategoryService(IRepository<Category> categoryRepo, IMapper mapper)
+        public CategoryService(IRepository<Category> categoryRepo, IRepository<Assignment> assignmentRepo, IMapper mapper)
         {
             this._categoryRepo = categoryRepo;
+            this._assignmentRepo = assignmentRepo;
             this._mapper = mapper;
         }
 
@@ -24,11 +26,8 @@ namespace business_logic.Services
             if (category == null)
                 throw new KeyNotFoundException("Category not found");
 
-            var hasAssignments = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories(userId));
-            if (!hasAssignments.Any(x => x.Id == id))
-            {
-                throw new InvalidOperationException("Unable to delete category because it contains assignments.");
-            }
+            var count = await _assignmentRepo.CountAsync(new AssignmentSpecs.ByCategoryId(id, userId));
+            if (count > 0) throw new InvalidOperationException("...");
 
             await _categoryRepo.DeleteByIdAsync(id);
             await _categoryRepo.SaveAsync();

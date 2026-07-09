@@ -20,10 +20,11 @@
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.6" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\business_logic\BLL.csproj" />
-		<ProjectReference Include="..\data-access\DAL.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\business_logic\BLL.csproj" />
+    <ProjectReference Include="..\data-access\DAL.csproj" />
+  </ItemGroup>
+
 
 	<PropertyGroup>
 		<NoWarn>$(NoWarn);NU1903</NoWarn>

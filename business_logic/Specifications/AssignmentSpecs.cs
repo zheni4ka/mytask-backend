@@ -62,26 +62,28 @@ namespace business_logic.Specifications
                     Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) || a.Description.Contains(pageParameters.SearchTerm));
                 }
 
+                if (pageParameters.CategoryId.HasValue && pageParameters.CategoryId > 0)
+                {
+                    Query.Where(a => a.CategoryId == pageParameters.CategoryId.Value);
+                }
+
                 if (!string.IsNullOrEmpty(pageParameters.SortBy))
                 {
-                    switch(pageParameters.SortBy)
+                    switch (pageParameters.SortBy.ToLower())
                     {
                         case "title":
-                            
-                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Title).Where(a => a.UserId == userId);
-                            else Query.OrderBy(a => a.Title).Where(a => a.UserId == userId);
+                            if (pageParameters.SortDescending) Query.OrderByDescending(a => a.Title);
+                            else Query.OrderBy(a => a.Title);
                             break;
 
                         case "description":
-                            
-                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.Description).Where(a => a.UserId == userId);
-                            else Query.OrderBy(a => a.Description).Where(a => a.UserId == userId);
+                            if (pageParameters.SortDescending) Query.OrderByDescending(a => a.Description);
+                            else Query.OrderBy(a => a.Description);
                             break;
 
                         case "duedate":
-                            
-                            if(pageParameters.SortDescending) Query.OrderByDescending(a => a.DueDate).Where(a => a.UserId == userId);
-                            else Query.OrderBy(a => a.DueDate).Where(a => a.UserId == userId);
+                            if (pageParameters.SortDescending) Query.OrderByDescending(a => a.DueDate);
+                            else Query.OrderBy(a => a.DueDate);
                             break;
                     }
                 }

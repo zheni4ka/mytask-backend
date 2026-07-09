@@ -23,7 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\business_core\business_core.csproj" />
+	  <ProjectReference Include="..\business_core\Core.csproj" />
 	</ItemGroup>
+
 
 </Project>

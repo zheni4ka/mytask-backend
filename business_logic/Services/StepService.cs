@@ -84,9 +84,7 @@ namespace business_logic.Services
         public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId, string userId)
         {
             var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.ByIdWithAssignment(taskId, userId));
-            if(!steps.Any()) {
-                throw new KeyNotFoundException("No steps found for the given assignment");
-            }
+            
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 

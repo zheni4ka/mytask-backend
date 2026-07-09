@@ -10,6 +10,8 @@ namespace business_logic.Validators.Category
     {
         public EditCategoryModelValidator()
         {
+            RuleFor(x => x.Id).GreaterThan(0).WithMessage("Invalid ID.");
+
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MaximumLength(50).WithMessage("Name cannot exceed 50 characters.");
