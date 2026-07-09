@@ -1,4 +1,4 @@
-﻿using business_logic.Interfaces;
+﻿using Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Ardalis.Specification;
 using data_access.data;

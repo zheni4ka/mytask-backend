@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
-using business_logic.DTOs;
-using business_logic.Entities;
+using Core.DTOs;
+using Core.Entities;
 
 namespace business_logic.Specifications
 {

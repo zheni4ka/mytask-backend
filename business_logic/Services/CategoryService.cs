@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using business_logic.DTOs;
-using business_logic.Entities;
-using business_logic.Interfaces;
+using Core.DTOs;
+using Core.Entities;
+using Core.Interfaces;
 using business_logic.Specifications;
 using static business_logic.Specifications.AssignmentSpecs;
 

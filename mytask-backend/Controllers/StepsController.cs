@@ -1,6 +1,6 @@
 ﻿using Ardalis.Specification;
-using business_logic.DTOs;
-using business_logic.Interfaces;
+using Core.DTOs;
+using Core.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

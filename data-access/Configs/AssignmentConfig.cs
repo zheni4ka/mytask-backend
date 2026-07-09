@@ -1,4 +1,4 @@
-﻿using business_logic.Entities;
+﻿using Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace data_access.Configs

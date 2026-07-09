@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification;
-using business_logic.Entities;
+using Core.Entities;
 
 namespace business_logic.Specifications
 {

@@ -1,5 +1,6 @@
-﻿using business_logic.Helpers;
-using business_logic.Interfaces;
+﻿using Core.Interfaces;
+using Core;
+using business_logic.Helpers;
 using business_logic.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;

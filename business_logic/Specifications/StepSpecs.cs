@@ -1,5 +1,5 @@
 ﻿using Ardalis.Specification;
-using business_logic.Entities;
+using Core.Entities;
 using Hangfire.Storage.Monitoring;
 
 namespace business_logic.Specifications

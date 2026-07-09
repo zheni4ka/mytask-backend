@@ -1,6 +1,6 @@
-﻿using business_logic.DTOs;
-using business_logic.Entities;
-using business_logic.Interfaces;
+﻿using Core.DTOs;
+using Core.Entities;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

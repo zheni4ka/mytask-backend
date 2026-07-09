@@ -1,4 +1,4 @@
-﻿using business_logic.DTOs;
+﻿using Core.DTOs;
 using FluentValidation;
 
 namespace business_logic.Validators.Assignment

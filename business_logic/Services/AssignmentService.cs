@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using business_logic.DTOs;
-using business_logic.Entities;
+using Core.DTOs;
+using Core.Entities;
+using Core.Interfaces;
 using business_logic.Helpers;
-using business_logic.Interfaces;
 using business_logic.Specifications;
 using Hangfire;
 using Hangfire.SqlServer;

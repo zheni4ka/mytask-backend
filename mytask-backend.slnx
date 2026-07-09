@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="business_core/business_core.csproj" Id="356c3487-07af-4334-ac41-182f285881b5" />
-  <Project Path="business_logic/business_logic.csproj" />
-  <Project Path="data-access/data_access.csproj" />
+  <Project Path="business_core/Core.csproj" Id="356c3487-07af-4334-ac41-182f285881b5" />
+  <Project Path="business_logic/BLL.csproj" />
+  <Project Path="data-access/DAL.csproj" />
   <Project Path="mytask-backend/mytask-backend.csproj" />
 </Solution>
