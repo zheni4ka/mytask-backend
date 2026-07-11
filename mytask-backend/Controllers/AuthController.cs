@@ -1,5 +1,6 @@
 ﻿using Ardalis.Specification;
 using Core.DTOs;
+using Core.DTOs.User;
 using Core.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +42,7 @@ namespace mytask_backend.Controllers
                 return BadRequest(new { message = result.ErrorMessage });
             }
 
-            return Ok(new { message = "Registration successful!" });
+            return Ok(new { token = result.Token, refreshToken = result.RefreshToken, message = "Registration successful!" });
         }
 
         [HttpPost("login")]
@@ -54,7 +55,26 @@ namespace mytask_backend.Controllers
                 return Unauthorized(new { message = result.ErrorMessage });
             }
 
-            return Ok(new { token = result.Token });
+            return Ok(new { token = result.Token, refreshToken = result.RefreshToken });
         }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenModel tokenModel)
+        {
+            if (tokenModel == null)
+            {
+                return BadRequest("Invalid client request");
+            }
+
+            var result = await _authService.RefreshTokenAsync(tokenModel);
+
+            if (!result.IsAuthenticated)
+            {
+                return Unauthorized(new { message = result.ErrorMessage });
+            }
+
+            return Ok(new { token = result.Token, refreshToken = result.RefreshToken });
+        }
+
     }
 }

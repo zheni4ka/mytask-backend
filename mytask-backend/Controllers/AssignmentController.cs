@@ -73,12 +73,7 @@ namespace mytask_backend.Controllers
             return Ok(await _assignmentService.GetAssignmentAsync(id, userId));
         }
 
-        [HttpGet("latest/{id:int}")]
-        public async Task<IActionResult> GetLatestByCategoryId(int id)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _assignmentService.GetLatestByCategoryId(id, userId));
-        }
+        
 
     }
 }

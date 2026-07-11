@@ -3,14 +3,13 @@ using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces;
 using business_logic.Specifications;
-using Hangfire;
-using Hangfire.SqlServer;
 
 namespace business_logic.Services
 {
     public class AssignmentService : IAssignmentService
     {
         private readonly IRepository<Assignment> _assignmentRepo;
+
         private readonly IMapper _mapper;
 
         public AssignmentService(IRepository<Assignment> repository, IMapper mapper)
@@ -32,8 +31,6 @@ namespace business_logic.Services
         public async Task<IEnumerable<AssignmentDTO>> GetAll(string userId)
         {
             var list = await _assignmentRepo.GetAllAsync();
-            //if(!list.Any())
-            //    throw new KeyNotFoundException("No assignments found");
 
             return _mapper.Map<IEnumerable<AssignmentDTO>>(list);
         }
@@ -41,8 +38,6 @@ namespace business_logic.Services
         public async Task<AssignmentDTO> GetAssignmentAsync(int id, string userId)
         {
             var obj = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id, userId));
-
-            //if (obj == null) throw new KeyNotFoundException("Assignment not found");
 
             return _mapper.Map<AssignmentDTO>(obj);
         }
@@ -131,6 +126,7 @@ namespace business_logic.Services
                 UserId = userId,
                 RefreshType = completedAssignment.RefreshType,
                 IsCompleted = false,
+                IsImportant = completedAssignment.IsImportant,
                 DueDate = CalculateNextDueDate(completedAssignment.DueDate, completedAssignment.RefreshType.Value)
             };
 

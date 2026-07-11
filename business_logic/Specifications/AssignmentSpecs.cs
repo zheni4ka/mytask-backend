@@ -107,8 +107,8 @@ namespace business_logic.Specifications
             {
                 if (!string.IsNullOrEmpty(pageParameters.SearchTerm))
                 {
-                    Query.Where(a => a.Title.Contains(pageParameters.SearchTerm) ||
-                                     a.Description.Contains(pageParameters.SearchTerm) && a.UserId == userId);
+                    Query.Where(a => (a.Title.Contains(pageParameters.SearchTerm) ||
+                                     a.Description.Contains(pageParameters.SearchTerm)) && a.UserId == userId);
                 }
             }
         }

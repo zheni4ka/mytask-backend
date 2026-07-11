@@ -3,6 +3,7 @@ using Core;
 using business_logic.Services;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using BLL.Services;
 
 namespace business_logic
 {
@@ -26,6 +27,7 @@ namespace business_logic
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStepService, StepService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtService, JwtService>();
         }
     }
 }

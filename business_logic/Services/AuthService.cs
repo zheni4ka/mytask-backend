@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.DTOs.User;
 using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
+
 namespace business_logic.Services
 {
     public class AuthService : IAuthService
@@ -14,12 +17,14 @@ namespace business_logic.Services
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly ICategoryService _categoryService;
+        private readonly IJwtService _jwtService;
 
-        public AuthService(UserManager<User> userManager, IConfiguration configuration, ICategoryService categoryService)
+        public AuthService(UserManager<User> userManager, IConfiguration configuration, ICategoryService categoryService, IJwtService jwtService)
         {
             _userManager = userManager;
             _configuration = configuration;
             _categoryService = categoryService;
+            _jwtService = jwtService;
         }
 
         public async Task<AuthResponse> LoginAsync(LoginModel model)
@@ -36,9 +41,53 @@ namespace business_logic.Services
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid email or password." };
             }
 
-            var token = GenerateJwtToken(user);
+            var token = _jwtService.GenerateJwtToken(user);
+            var refreshToken = _jwtService.GenerateRefreshToken();
 
-            return new AuthResponse { IsAuthenticated = true, Token = token };
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); 
+            await _userManager.UpdateAsync(user);
+
+            return new AuthResponse
+            {
+                IsAuthenticated = true,
+                Token = token,
+                RefreshToken = refreshToken
+            };
+        }
+
+        public async Task<AuthResponse> RefreshTokenAsync(TokenModel tokenModel)
+        {
+            if (tokenModel is null)
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid client request" };
+
+            string accessToken = tokenModel.AccessToken;
+            string refreshToken = tokenModel.RefreshToken;
+
+            var principal = _jwtService.GetPrincipalFromExpiredToken(accessToken);
+            if (principal == null)
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid access token or refresh token" };
+
+            var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var user = await _userManager.FindByEmailAsync(email!);
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Invalid access token or refresh token" };
+            }
+
+            var newAccessToken = _jwtService.GenerateJwtToken(user);
+            var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            await _userManager.UpdateAsync(user);
+
+            return new AuthResponse
+            {
+                IsAuthenticated = true,
+                Token = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
         }
 
         public async Task<AuthResponse> RegisterAsync(RegisterModel model)
@@ -76,40 +125,12 @@ namespace business_logic.Services
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = $"Failed to initialize user categories: {ex.Message}" };
             }
 
-            var token = GenerateJwtToken(user);
+            var token = _jwtService.GenerateJwtToken(user);
             return new AuthResponse { IsAuthenticated = true, Token = token };
 
         }
 
-        private string GenerateJwtToken(User user)
-        {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var secretKey = jwtSettings["Secret"];
-            var issuer = jwtSettings["Issuer"];
-            var audience = jwtSettings["Audience"];
-
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id), 
-                new Claim(ClaimTypes.Email, user.Email!)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            const int TokenExpirationDays = 3;
-
-            var tokenDescriptor = new JwtSecurityToken(
-                issuer: issuer,
-                audience: audience,
-                claims: claims,
-                expires: DateTime.Now.AddDays(TokenExpirationDays),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
-        }
+        
 
     }
 }

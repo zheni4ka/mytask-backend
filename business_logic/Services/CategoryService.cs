@@ -3,7 +3,6 @@ using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces;
 using business_logic.Specifications;
-using static business_logic.Specifications.AssignmentSpecs;
 
 namespace business_logic.Services
 {
@@ -74,23 +73,6 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
-        public async Task<IEnumerable<CategoryDTO>> GetCategoriesWithAssignments(string userId)
-        {
-            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.CategoriesWithActiveTasks(userId));
-
-            if(!categories.Any()) throw new KeyNotFoundException("No categories with active tasks found"); 
-
-            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
-        }
-
-        public async Task<IEnumerable<CategoryDTO>> GetEmptyCategories(string userId)
-        {
-            var categories = await _categoryRepo.GetListBySpecAsync(new CategorySpecs.EmptyCategories(userId));
-
-            if(!categories.Any()) throw new KeyNotFoundException("No empty categories found");
-
-            return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
-        }
 
         public async Task CreateDefaultCategoriesAsync(string userId)
         {
