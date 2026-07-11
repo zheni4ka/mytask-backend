@@ -13,6 +13,9 @@ namespace Core.DTOs
         public string UserId { get; set; }
         public DateTime DueDate { get; set; }
         public RefreshType? RefreshType { get; set; }
+        public int TotalSteps { get; set; }
+        public int CompletedSteps { get; set; }
+        public bool IsImportant { get; set; } 
         public bool IsCompleted { get; set; }
     }
 }

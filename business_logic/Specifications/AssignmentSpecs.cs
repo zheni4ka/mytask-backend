@@ -55,7 +55,8 @@ namespace business_logic.Specifications
         {
             public AssignmentsByQuerySpec(PageParameters pageParameters, string userId)
             {
-                Query.Where(a => a.UserId == userId);
+                Query.Where(a => a.UserId == userId)
+                .Include(a => a.Steps);
 
                 if (!string.IsNullOrEmpty(pageParameters.SearchTerm))
                 {
@@ -63,9 +64,15 @@ namespace business_logic.Specifications
                              a.Description.Contains(pageParameters.SearchTerm)) && a.UserId == userId);
                 }
 
+
                 if (pageParameters.CategoryId.HasValue && pageParameters.CategoryId > 0)
                 {
                     Query.Where(a => a.CategoryId == pageParameters.CategoryId.Value);
+                }
+
+                if (pageParameters.IsImportant.HasValue)
+                {
+                    Query.Where(a => a.IsImportant == pageParameters.IsImportant.Value);
                 }
 
                 if (!string.IsNullOrEmpty(pageParameters.SortBy))

@@ -8,8 +8,13 @@ namespace Core
     {
         public ApplicationProfile()
         {
-            CreateMap<CreateAssignmentModel, Assignment>().ReverseMap(); 
-            CreateMap<AssignmentDTO, Assignment>().ReverseMap();
+            CreateMap<CreateAssignmentModel, Assignment>().ReverseMap();
+            
+            CreateMap<Assignment, AssignmentDTO>()
+                .ForMember(dest => dest.TotalSteps, opt => opt.MapFrom(src => src.Steps != null ? src.Steps.Count() : 0))
+                .ForMember(dest => dest.CompletedSteps, opt => opt.MapFrom(src => src.Steps != null ? src.Steps.Count(s => s.IsCompleted) : 0))
+                .ReverseMap();
+
             CreateMap<EditAssignmentModel, Assignment>().ReverseMap();
             CreateMap<AssignmentDTO, CreateAssignmentModel>().ReverseMap();
 

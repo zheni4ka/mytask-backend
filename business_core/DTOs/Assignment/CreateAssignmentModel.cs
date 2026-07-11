@@ -9,6 +9,7 @@ namespace Core.DTOs
         public int CategoryId { get; set; }
         public DateTime DueDate { get; set; }
         public RefreshType? RefreshType { get; set; }
+        public bool IsImportant { get; set; }
         public bool IsCompleted { get; set; } = false;
     }
 }
