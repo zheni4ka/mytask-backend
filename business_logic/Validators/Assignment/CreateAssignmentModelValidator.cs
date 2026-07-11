@@ -11,9 +11,6 @@ namespace business_logic.Validators.Assignment
                 .NotEmpty().WithMessage("Title is required.")
                 .MaximumLength(100).WithMessage("Title cannot exceed 100 characters.");
 
-            RuleFor(x => x.Description)
-                .NotEmpty().WithMessage("Description is required.");
-
             RuleFor(x => x.DueDate)
                 .GreaterThan(DateTime.Now).WithMessage("Due date must be in the future.");
 

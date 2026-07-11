@@ -44,8 +44,8 @@ namespace business_logic.Services
         public async Task<IEnumerable<AssignmentDTO>> GetAll(string userId)
         {
             var list = await _assignmentRepo.GetAllAsync();
-            if(!list.Any())
-                throw new KeyNotFoundException("No assignments found");
+            //if(!list.Any())
+            //    throw new KeyNotFoundException("No assignments found");
 
             return _mapper.Map<IEnumerable<AssignmentDTO>>(list);
         }
@@ -54,7 +54,7 @@ namespace business_logic.Services
         {
             var obj = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id, userId));
 
-            if (obj == null) throw new KeyNotFoundException("Assignment not found");
+            //if (obj == null) throw new KeyNotFoundException("Assignment not found");
 
             return _mapper.Map<AssignmentDTO>(obj);
         }
@@ -86,8 +86,8 @@ namespace business_logic.Services
         {
             var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignment.Id, userId));
 
-            if (existingAssignment == null)
-                throw new KeyNotFoundException("Assignment not found");
+            //if (existingAssignment == null)
+            //    throw new KeyNotFoundException("Assignment not found");
 
             var assignmentEntity = _mapper.Map<Assignment>(assignment);
             assignmentEntity.UserId = userId;
@@ -100,8 +100,6 @@ namespace business_logic.Services
         public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId, string userId)
         {
             var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId, userId));
-            if (assignments == null)
-                throw new KeyNotFoundException("No assignments found for the given category");
 
             return _mapper.Map<AssignmentDTO>(assignments);
         }
@@ -117,18 +115,12 @@ namespace business_logic.Services
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments(userId));
 
-            if(!assignments.Any())
-                throw new KeyNotFoundException("No overdue assignments found");
-
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead, string userId)
         {
             var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead, userId));
-
-            if(!assignments.Any())
-                throw new KeyNotFoundException("No upcoming assignments found");
 
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
