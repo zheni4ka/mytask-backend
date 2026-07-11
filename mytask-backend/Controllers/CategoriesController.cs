@@ -71,29 +71,5 @@ namespace mytask_backend.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Ok(await _categoryService.GetCategoryAsync(id, userId));
         }
-
-        [HttpGet("latest/{id:int}")]
-        public async Task<IActionResult> GetByLatestAssignments(int id)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _categoryService.GetByLatestAssignments(id, userId));
-        }
-
-        [HttpGet("with-assignments")]
-        public async Task<IActionResult> GetCategoriesWithAssignments()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-            return Ok(await _categoryService.GetCategoriesWithAssignments(userId));
-        }
-
-        [HttpGet("empty")]
-        public async Task<IActionResult> GetEmptyCategories()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _categoryService.GetEmptyCategories(userId));
-        }
-
     }
 }

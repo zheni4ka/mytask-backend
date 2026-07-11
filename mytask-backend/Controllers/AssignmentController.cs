@@ -80,26 +80,5 @@ namespace mytask_backend.Controllers
             return Ok(await _assignmentService.GetLatestByCategoryId(id, userId));
         }
 
-        [HttpGet("by-category/{id:int}")]
-        public async Task<IActionResult> GetByCategoryId(int id)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _assignmentService.GetByCategoryId(id, userId));
-        }
-
-        [HttpGet("overdue")]
-        public async Task<IActionResult> GetOverdueAssignments()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _assignmentService.GetOverdueAssignments(userId));
-        }
-
-        [HttpGet("upcoming/{daysAhead:int}")]
-        public async Task<IActionResult> GetUpcomingAssignments(int daysAhead)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _assignmentService.GetUpcomingAssignments(daysAhead, userId));
-        }
-
     }
 }

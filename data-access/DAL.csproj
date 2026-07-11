@@ -27,8 +27,9 @@
 </ItemGroup>
 
 <ItemGroup>
-  <ProjectReference Include="..\business_logic\BLL.csproj" />
+  <ProjectReference Include="..\business_core\Core.csproj" />
 </ItemGroup>
+
 	
 
 	

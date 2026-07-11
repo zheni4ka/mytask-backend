@@ -57,12 +57,6 @@ namespace mytask_backend.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Ok(await _stepService.GetAll(userId));
-        }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)

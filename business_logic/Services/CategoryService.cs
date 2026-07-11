@@ -57,9 +57,12 @@ namespace business_logic.Services
 
         public async Task UpdateAsync(EditCategoryModel category, string userId)
         {
-            var categoryEntity = _mapper.Map<Category>(category);
-            categoryEntity.UserId = userId;
-            _categoryRepo.Update(categoryEntity);
+            var existingCategory = await _categoryRepo.GetItemBySpecAsync(new CategorySpecs.ById(category.Id, userId));
+
+            if (existingCategory == null)
+                throw new KeyNotFoundException("Category not found");
+
+            _mapper.Map(category, existingCategory);
             await _categoryRepo.SaveAsync();
         }
 

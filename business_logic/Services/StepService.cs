@@ -30,14 +30,6 @@ namespace business_logic.Services
             await _stepRepository.SaveAsync();
         }
 
-        public async Task<IEnumerable<StepDTO>> GetAll(string userId)
-        {
-            var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.All(userId));
-            if(!steps.Any()) {
-                throw new KeyNotFoundException("No steps found");
-            }
-            return _mapper.Map<IEnumerable<StepDTO>>(steps);
-        }
 
         public async Task<StepDTO> GetStepAsync(int id, string userId)
         {
@@ -54,30 +46,26 @@ namespace business_logic.Services
 
             if (assignment == null)
             {
-                throw new KeyNotFoundException("Task not found or you are not the owner");
+                throw new UnauthorizedAccessException("Task not found or you are not the owner");
             }
 
             var stepEntity = _mapper.Map<Step>(step);
 
-            if (stepEntity.Assignment.UserId != userId)
-            {
-                throw new UnauthorizedAccessException("You are not the owner of this assignment");
-            }
-
-            await _stepRepository.InsertAsync(_mapper.Map<Step>(step));
+            await _stepRepository.InsertAsync(stepEntity);
             await _stepRepository.SaveAsync();
         }
 
         public async Task UpdateAsync(EditStepModel step, string userId)
         {
-            var stepEntity = _mapper.Map<Step>(step);
+            var existingStep = await _stepRepository.GetItemBySpecAsync(new StepSpecs.ByIdWithAssignment(step.Id, userId));
 
-            if(stepEntity.Assignment.UserId != userId)
+            if (existingStep == null)
             {
-                throw new UnauthorizedAccessException("You are not the owner of this assignment");
+                throw new KeyNotFoundException("Step not found or access denied");
             }
 
-            _stepRepository.Update(stepEntity);
+            _mapper.Map(step, existingStep);
+
             await _stepRepository.SaveAsync();
         }
 

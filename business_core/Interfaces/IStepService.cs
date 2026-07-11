@@ -4,7 +4,6 @@ namespace Core.Interfaces
 {
     public interface IStepService
     {
-        Task<IEnumerable<StepDTO>> GetAll(string userId);
         Task<StepDTO> GetStepAsync(int id, string userId);
         Task InsertAsync(CreateStepModel step, string userId);
         Task UpdateAsync(EditStepModel step, string userId);

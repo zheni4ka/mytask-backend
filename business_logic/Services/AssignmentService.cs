@@ -2,7 +2,6 @@
 using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces;
-using business_logic.Helpers;
 using business_logic.Specifications;
 using Hangfire;
 using Hangfire.SqlServer;
@@ -13,29 +12,18 @@ namespace business_logic.Services
     {
         private readonly IRepository<Assignment> _assignmentRepo;
         private readonly IMapper _mapper;
-        private readonly RecurringJobHelper _recurringJobService;
 
-        public AssignmentService(IRepository<Assignment> repository, IMapper mapper, RecurringJobHelper recurringJobService)
+        public AssignmentService(IRepository<Assignment> repository, IMapper mapper)
         {
             this._assignmentRepo = repository;
             this._mapper = mapper;
-            this._recurringJobService = recurringJobService;
         }
 
         public async Task DeleteAsync(int id, string userId)
         {
             var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(id, userId));
-            if(assignment == null)
+            if (assignment == null)
                 throw new KeyNotFoundException("Assignment not found");
-
-            try
-            {
-                _recurringJobService.RemoveRecurringJob(id);
-            }
-            catch
-            {
-                throw new KeyNotFoundException("Recurring job not found for the assignment");
-            }
 
             await _assignmentRepo.DeleteByIdAsync(id);
             await _assignmentRepo.SaveAsync();
@@ -61,40 +49,29 @@ namespace business_logic.Services
 
         public async Task InsertAsync(CreateAssignmentModel model, string userId)
         {
-            var assignment = new Assignment
-            {
-                Title = model.Title,
-                Description = model.Description,
-                DueDate = model.DueDate,
-                CategoryId = model.CategoryId,
-                UserId = userId,
-                RefreshType = model.RefreshType
-            };
+            var assignment = _mapper.Map<Assignment>(model);
+            assignment.UserId = userId;
 
             await _assignmentRepo.InsertAsync(assignment);
             await _assignmentRepo.SaveAsync();
-
-            if (model.RefreshType.HasValue)
-            {
-                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
-
-                _recurringJobService.ScheduleRecurringJob(assignment.Id, cron);
-            }
         }
 
-        public async Task UpdateAsync(EditAssignmentModel assignment, string userId)
+        public async Task UpdateAsync(EditAssignmentModel model, string userId)
         {
-            var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignment.Id, userId));
+            var existingAssignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(model.Id, userId));
 
-            //if (existingAssignment == null)
-            //    throw new KeyNotFoundException("Assignment not found");
+            if (existingAssignment == null)
+                throw new KeyNotFoundException("Assignment not found");
 
-            var assignmentEntity = _mapper.Map<Assignment>(assignment);
-            assignmentEntity.UserId = userId;
-            _assignmentRepo.Update(assignmentEntity);
+            bool justCompleted = model.IsCompleted && !existingAssignment.IsCompleted;
+
+            _mapper.Map(model, existingAssignment);
             await _assignmentRepo.SaveAsync();
 
-            await ManageRecurringJob(assignment.Id, userId, existingAssignment.RefreshType, assignment.RefreshType);
+            if (justCompleted && existingAssignment.RefreshType.HasValue)
+            {
+                await GenerateNextRecurringTaskAsync(existingAssignment, userId);
+            }
         }
 
         public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId, string userId)
@@ -144,35 +121,33 @@ namespace business_logic.Services
             };
         }
 
-        private async Task ManageRecurringJob(int assignmentId, string userId, RefreshType? oldRefreshType, RefreshType? newRefreshType)
+        private async Task GenerateNextRecurringTaskAsync(Assignment completedAssignment, string userId)
         {
-            string jobId = $"Assignment_{assignmentId}";
-            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignmentId, userId));
+            var nextTask = new Assignment
+            {
+                Title = completedAssignment.Title,
+                Description = completedAssignment.Description,
+                CategoryId = completedAssignment.CategoryId,
+                UserId = userId,
+                RefreshType = completedAssignment.RefreshType,
+                IsCompleted = false,
+                DueDate = CalculateNextDueDate(completedAssignment.DueDate, completedAssignment.RefreshType.Value)
+            };
 
-            if (oldRefreshType == null && newRefreshType.HasValue)
-            {
-                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
-                _recurringJobService.ScheduleRecurringJob(assignmentId, cron);
-            }
-            else if (oldRefreshType.HasValue && newRefreshType.HasValue && oldRefreshType != newRefreshType)
-            {
-                string cron = await GetCronExpression(_mapper.Map<AssignmentDTO>(assignment));
-                _recurringJobService.ScheduleRecurringJob(assignmentId, cron);
-            }
-            else if (oldRefreshType.HasValue && newRefreshType == null)
-            {
-                _recurringJobService.RemoveRecurringJob(assignmentId);
-            }
+            await _assignmentRepo.InsertAsync(nextTask);
+            await _assignmentRepo.SaveAsync();
         }
 
-        async Task<string> GetCronExpression(AssignmentDTO assignmentDTO)
+        private DateTime CalculateNextDueDate(DateTime currentDueDate, RefreshType refreshType)
         {
-            return assignmentDTO.RefreshType switch
+            var baseDate = DateTime.UtcNow > currentDueDate ? DateTime.UtcNow : currentDueDate;
+
+            return refreshType switch
             {
-                RefreshType.Daily => Hangfire.Cron.Daily(assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
-                RefreshType.Weekly => Hangfire.Cron.Weekly(assignmentDTO.DueDate.DayOfWeek, assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
-                RefreshType.Monthly => Hangfire.Cron.Monthly(assignmentDTO.DueDate.Day, assignmentDTO.DueDate.Hour, assignmentDTO.DueDate.Minute),
-                _ => throw new ArgumentException("Unknown refresh type")
+                RefreshType.Daily => baseDate.AddDays(1),
+                RefreshType.Weekly => baseDate.AddDays(7),
+                RefreshType.Monthly => baseDate.AddMonths(1),
+                _ => baseDate.AddDays(1)
             };
         }
     }
