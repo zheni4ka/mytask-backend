@@ -72,7 +72,7 @@ namespace business_logic.Services
                 throw new KeyNotFoundException("No categories found for the given assignment");
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
-
+    
 
         public async Task CreateDefaultCategoriesAsync(string userId)
         {

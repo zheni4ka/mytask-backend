@@ -71,8 +71,8 @@ namespace business_logic.Services
 
         public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId, string userId)
         {
-            var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.ByIdWithAssignment(taskId, userId));
-            
+            var steps = await _stepRepository.GetListBySpecAsync(new StepSpecs.ByAssignmentId(taskId, userId));
+
             return _mapper.Map<IEnumerable<StepDTO>>(steps);
         }
 

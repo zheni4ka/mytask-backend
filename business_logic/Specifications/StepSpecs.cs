@@ -10,7 +10,7 @@ namespace business_logic.Specifications
         {
             public ById(int id, string userId)
             {
-                Query.Where(x => x.Assignment.UserId == userId);
+                Query.Where(x => x.Id == id && x.Assignment.UserId == userId);
             }
         }
 
@@ -26,7 +26,16 @@ namespace business_logic.Specifications
         {
             public ByIdWithAssignment(int id, string userId)
             {
-                Query.Where(x => x.AssignmentId == id && x.Assignment.UserId == userId).Include(x => x.Assignment);
+                Query.Where(x => x.Id == id && x.Assignment.UserId == userId).Include(x => x.Assignment);
+            }
+        }
+
+        public class ByAssignmentId : Specification<Step>
+        {
+            public ByAssignmentId(int assignmentId, string userId)
+            {
+                Query.Where(x => x.AssignmentId == assignmentId && x.Assignment.UserId == userId)
+                     .OrderBy(x => x.Id); 
             }
         }
 
