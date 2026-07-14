@@ -45,6 +45,28 @@ namespace mytask_backend.Controllers
             return Ok(new { token = result.Token, refreshToken = result.RefreshToken, message = "Registration successful!" });
         }
 
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+        {
+            if (string.IsNullOrEmpty(request.IdToken))
+            {
+                return BadRequest(new AuthResponse
+                {
+                    IsAuthenticated = false,
+                    ErrorMessage = "Token not found"
+                });
+            }
+
+            var result = await _authService.LoginWithGoogleAsync(request);
+
+            if (!result.IsAuthenticated)
+            {
+                return Unauthorized(result); 
+            }
+
+            return Ok(result); 
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {

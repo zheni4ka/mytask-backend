@@ -15,9 +15,9 @@
 
         public int? CategoryId { get; set; }
         public string SearchTerm { get; set; } = string.Empty;
-        public bool? IsImportant { get; set; }
         public string SortBy { get; set; } = string.Empty;
         public bool SortDescending { get; set; } = false;
+        public bool? IsImportant { get; set; }
     }
 
 }

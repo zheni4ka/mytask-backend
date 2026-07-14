@@ -4,28 +4,76 @@ using Core.Entities;
 using Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
-using System.Security.Cryptography;
+using Google.Apis.Auth;
 
 namespace business_logic.Services
 {
     public class AuthService : IAuthService
     {
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
         private readonly ICategoryService _categoryService;
+        private readonly IConfiguration _configuration;
         private readonly IJwtService _jwtService;
 
         public AuthService(UserManager<User> userManager, IConfiguration configuration, ICategoryService categoryService, IJwtService jwtService)
         {
             _userManager = userManager;
-            _configuration = configuration;
             _categoryService = categoryService;
+            this._configuration = configuration;
             _jwtService = jwtService;
         }
+
+        public async Task<AuthResponse> LoginWithGoogleAsync(GoogleLoginRequest request)
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new List<string> { _configuration["Google:ClientId"] }
+            };
+
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
+
+                var user = await _userManager.FindByEmailAsync(payload.Email);
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Email = payload.Email,
+                        UserName = payload.Email
+                    };
+
+                    var result = await _userManager.CreateAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        return new AuthResponse
+                        {
+                            IsAuthenticated = false,
+                            ErrorMessage = "Unable to find user in db"
+                        };
+                    }
+                }
+
+                var token = _jwtService.GenerateJwtToken(user);
+
+                return new AuthResponse
+                {
+                    IsAuthenticated = true,
+                    Token = token,
+                    RefreshToken = null
+                };
+            }
+            catch (InvalidJwtException)
+            {
+                return new AuthResponse
+                {
+                    IsAuthenticated = false,
+                    ErrorMessage = "Invalid Google token"
+                };
+            }
+        }
+
 
         public async Task<AuthResponse> LoginAsync(LoginModel model)
         {
