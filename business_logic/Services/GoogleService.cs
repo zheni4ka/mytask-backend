@@ -89,6 +89,7 @@ namespace BLL.Services
             task.GoogleEventId = null;
 
             _assignmentRepo.Update(task);
+            await _assignmentRepo.SaveAsync();
         }
     }
 }
