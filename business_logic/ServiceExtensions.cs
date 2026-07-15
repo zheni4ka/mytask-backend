@@ -28,6 +28,7 @@ namespace business_logic
             services.AddScoped<IStepService, StepService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IGoogleCalendarService, GoogleCalendarService>();
         }
     }
 }

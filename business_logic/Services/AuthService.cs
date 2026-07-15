@@ -20,7 +20,7 @@ namespace business_logic.Services
         {
             _userManager = userManager;
             _categoryService = categoryService;
-            this._configuration = configuration;
+            _configuration = configuration;
             _jwtService = jwtService;
         }
 

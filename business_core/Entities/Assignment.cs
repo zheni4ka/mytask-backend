@@ -18,6 +18,7 @@
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; } = false;
         public bool IsImportant { get; set; } = false;
+        public string? GoogleEventId { get; set; }
         public IEnumerable<Step> Steps { get; set; }
         public RefreshType? RefreshType { get; set; }
     }

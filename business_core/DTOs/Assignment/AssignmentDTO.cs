@@ -17,5 +17,6 @@ namespace Core.DTOs
         public int CompletedSteps { get; set; }
         public bool IsImportant { get; set; } 
         public bool IsCompleted { get; set; }
+        public string? GoogleEventId { get; set; }
     }
 }

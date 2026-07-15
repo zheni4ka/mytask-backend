@@ -15,13 +15,62 @@ namespace mytask_backend.Controllers
         private readonly IAssignmentService _assignmentService;
         private readonly IValidator<CreateAssignmentModel> _createValidator;
         private readonly IValidator<EditAssignmentModel> _editValidator;
+        private readonly IGoogleCalendarService _calendarService;
 
-        public AssignmentController(IAssignmentService assignmentService, IValidator<EditAssignmentModel> editValidator, IValidator<CreateAssignmentModel> createValidator)
+        public AssignmentController(IAssignmentService assignmentService, 
+            IValidator<EditAssignmentModel> editValidator, 
+            IValidator<CreateAssignmentModel> createValidator,
+            IGoogleCalendarService calendarService)
         {
             _assignmentService = assignmentService;
             _editValidator = editValidator;
             _createValidator = createValidator;
+            _calendarService = calendarService;
         }
+
+        [HttpPost("remove-from-calendar")]
+        public async Task<IActionResult> RemoveFromCalendar([FromBody] GoogleEventDto eventDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "user is not identified" });
+            }
+
+            try
+            {
+                await _calendarService.DeleteEventAsync(eventDto, userId);
+                return Ok(new { message = "Event is successfully removed from calendar" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("add-to-calendar")]
+        public async Task<IActionResult> AddToCalendar([FromBody] GoogleEventDto eventDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not identified" });
+            }
+
+            try
+            {
+                await _calendarService.CreateEventAsync(eventDto, userId);
+
+                return Ok(new { message = "Event is successfully added to Google Calendar" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateAssignmentModel model)
