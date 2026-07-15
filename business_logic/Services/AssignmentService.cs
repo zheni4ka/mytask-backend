@@ -117,11 +117,10 @@ namespace business_logic.Services
 
         private async Task GenerateNextRecurringTaskAsync(Assignment completedAssignment, string userId)
         {
-            var count = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.AssignmentsByNameCountSpec(completedAssignment.Title, userId));
             
             var nextTask = new Assignment
             {
-                Title = string.Concat(completedAssignment.Title, $" ({count.Count()})"),
+                Title = completedAssignment.Title,
                 Description = completedAssignment.Description,
                 CategoryId = completedAssignment.CategoryId,
                 UserId = userId,

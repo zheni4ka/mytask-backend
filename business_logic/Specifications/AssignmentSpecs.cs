@@ -113,16 +113,7 @@ namespace business_logic.Specifications
             }
         }
 
-        public class AssignmentsByNameCountSpec : Specification<Assignment>
-        {
-            public AssignmentsByNameCountSpec(string AssignmentName, string userId)
-            {
-                if(!string.IsNullOrEmpty(AssignmentName))
-                {
-                    Query.Where(x => (x.UserId.Equals(userId)) && x.Title.Contains(AssignmentName));
-                }
-            }
-        }
+        
 
     }
 }
