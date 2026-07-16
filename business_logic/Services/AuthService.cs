@@ -31,48 +31,53 @@ namespace business_logic.Services
                 Audience = new List<string> { _configuration["Google:ClientId"] }
             };
 
-            try
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
+
+            var user = await _userManager.FindByEmailAsync(payload.Email);
+            if (user is null)
             {
-                var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
-
-                var user = await _userManager.FindByEmailAsync(payload.Email);
-                if (user == null)
+                var newuser = new User
                 {
-                    user = new User
-                    {
-                        Email = payload.Email,
-                        UserName = payload.Email
-                    };
+                    UserName = payload.Name,
+                    Email = payload.Email,
+                };
 
-                    var result = await _userManager.CreateAsync(user);
-                    if (!result.Succeeded)
-                    {
-                        return new AuthResponse
-                        {
-                            IsAuthenticated = false,
-                            ErrorMessage = "Unable to find user in db"
-                        };
-                    }
+                var result = await _userManager.CreateAsync(newuser);
+
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                    return new AuthResponse { IsAuthenticated = false, ErrorMessage = errors };
                 }
-
-                var token = _jwtService.GenerateJwtToken(user);
-
+                try
+                {
+                    await _categoryService.CreateDefaultCategoriesAsync(newuser.Id);
+                }
+                catch (Exception ex)
+                {
+                    await _userManager.DeleteAsync(newuser);
+                    return new AuthResponse { IsAuthenticated = false, ErrorMessage = $"Failed to initialize user categories: {ex.Message}" };
+                }
+                var newtoken = _jwtService.GenerateJwtToken(newuser);
                 return new AuthResponse
                 {
                     IsAuthenticated = true,
-                    Token = token,
+                    Token = newtoken,
                     RefreshToken = null
                 };
             }
-            catch (InvalidJwtException)
+            var token = _jwtService.GenerateJwtToken(user);
+
+
+            return new AuthResponse
             {
-                return new AuthResponse
-                {
-                    IsAuthenticated = false,
-                    ErrorMessage = "Invalid Google token"
-                };
-            }
+                IsAuthenticated = true,
+                Token = token,
+                RefreshToken = null
+            };
         }
+
 
 
         public async Task<AuthResponse> LoginAsync(LoginModel model)
@@ -93,7 +98,7 @@ namespace business_logic.Services
             var refreshToken = _jwtService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); 
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
             return new AuthResponse
@@ -145,14 +150,14 @@ namespace business_logic.Services
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Passwords do not match." };
             }
 
-            if(await _userManager.FindByEmailAsync(model.Email) != null)
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
                 return new AuthResponse { IsAuthenticated = false, ErrorMessage = "Email is already in use." };
             }
 
             var user = new User
             {
-                UserName = model.FirstName, 
+                UserName = model.FirstName,
                 Email = model.Email,
             };
 
@@ -178,7 +183,7 @@ namespace business_logic.Services
 
         }
 
-        
+
 
     }
 }

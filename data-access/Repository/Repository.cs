@@ -32,7 +32,7 @@ namespace data_access.Repository
             await dbSet.AddAsync(entity);
         }
 
-        public virtual async void Update(TEntity entityToUpdate)
+        public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).State = EntityState.Modified;

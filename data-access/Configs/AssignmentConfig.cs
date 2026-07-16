@@ -18,7 +18,7 @@ namespace data_access.Configs
             builder.HasOne(a => a.User)
                    .WithMany(u => u.Assignments)
                    .HasForeignKey(a => a.UserId)
-                   .OnDelete(DeleteBehavior.Restrict); 
+                   .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }
