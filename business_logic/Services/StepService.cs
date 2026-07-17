@@ -9,14 +9,14 @@ namespace business_logic.Services
     public class StepService : IStepService
     {
         private readonly IRepository<Step> _stepRepository;
-        private readonly IRepository<Assignment> _assignmentRepository;
+        private readonly IAssignmentService _assignmentService;
         private readonly IMapper _mapper;
 
 
-        public StepService(IRepository<Step> stepRepository, IRepository<Assignment> assignmentRepository, IMapper mapper)
+        public StepService(IRepository<Step> stepRepository, IAssignmentService assignmentService, IMapper mapper)
         {
             _stepRepository = stepRepository;
-            _assignmentRepository = assignmentRepository;
+            _assignmentService = assignmentService;
             _mapper = mapper;
         }
 
@@ -28,6 +28,7 @@ namespace business_logic.Services
 
             await _stepRepository.DeleteByIdAsync(id);
             await _stepRepository.SaveAsync();
+            await _assignmentService.CheckAndCompleteTaskByStepsAsync(step.AssignmentId, userId);
         }
 
 
@@ -42,7 +43,7 @@ namespace business_logic.Services
 
         public async Task InsertAsync(CreateStepModel step, string userId)
         {
-            var assignment = await _assignmentRepository.GetItemBySpecAsync(new AssignmentSpecs.ById(step.AssignmentId, userId));
+            var assignment = await _assignmentService.GetAssignmentAsync(step.AssignmentId, userId);
 
             if (assignment == null)
             {
@@ -53,6 +54,7 @@ namespace business_logic.Services
 
             await _stepRepository.InsertAsync(stepEntity);
             await _stepRepository.SaveAsync();
+            await _assignmentService.CheckAndCompleteTaskByStepsAsync(step.AssignmentId, userId);
         }
 
         public async Task UpdateAsync(EditStepModel step, string userId)
@@ -67,6 +69,7 @@ namespace business_logic.Services
             _mapper.Map(step, existingStep);
 
             await _stepRepository.SaveAsync();
+            await _assignmentService.CheckAndCompleteTaskByStepsAsync(step.AssignmentId, userId);
         }
 
         public async Task<IEnumerable<StepDTO>> GetByAssigmentId(int taskId, string userId)

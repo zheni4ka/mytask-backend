@@ -10,7 +10,7 @@ namespace business_logic.Specifications
         {
             public ById(int id, string userId)
             {
-                Query.Where(a => a.Id == id && a.UserId == userId);
+                Query.Where(a => a.Id == id && a.UserId == userId).Include(x => x.Steps);
             }
         }
 

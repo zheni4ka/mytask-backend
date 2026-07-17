@@ -9,11 +9,13 @@ namespace business_logic.Services
     public class AssignmentService : IAssignmentService
     {
         private readonly IRepository<Assignment> _assignmentRepo;
+        private readonly IRepository<Step> _stepRepo;
         private readonly IMapper _mapper;
 
-        public AssignmentService(IRepository<Assignment> repository, IMapper mapper)
+        public AssignmentService(IRepository<Assignment> repository, IRepository<Step> step, IMapper mapper)
         {
             this._assignmentRepo = repository;
+            this._stepRepo = step;
             this._mapper = mapper;
         }
 
@@ -68,11 +70,31 @@ namespace business_logic.Services
             }
         }
 
-        public async Task<AssignmentDTO> GetLatestByCategoryId(int categoryId, string userId)
+        public async Task CheckAndCompleteTaskByStepsAsync(int assignmentId, string userId)
         {
-            var assignments = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.LatestByCategoryId(categoryId, userId));
+            var assignment = await _assignmentRepo.GetItemBySpecAsync(new AssignmentSpecs.ById(assignmentId, userId));
 
-            return _mapper.Map<AssignmentDTO>(assignments);
+            if (assignment == null || assignment.Steps == null || !assignment.Steps.Any())
+                return;
+
+            bool allStepsCompleted = assignment.Steps.All(s => s.IsCompleted);
+            bool wasCompletedBefore = assignment.IsCompleted;
+
+            if (allStepsCompleted && !wasCompletedBefore)
+            {
+                assignment.IsCompleted = true;
+                await _assignmentRepo.SaveAsync();
+
+                if (assignment.RefreshType.HasValue)
+                {
+                    await GenerateNextRecurringTaskAsync(assignment, userId);
+                }
+            }
+            else if (!allStepsCompleted && wasCompletedBefore)
+            {
+                assignment.IsCompleted = false;
+                await _assignmentRepo.SaveAsync();
+            }
         }
 
         public async Task<IEnumerable<AssignmentDTO>> GetByCategoryId(int categoryId, string userId)
@@ -82,19 +104,6 @@ namespace business_logic.Services
             return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
         }
 
-        public async Task<IEnumerable<AssignmentDTO>> GetOverdueAssignments(string userId)
-        {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.OverdueAssignments(userId));
-
-            return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
-        }
-
-        public async Task<IEnumerable<AssignmentDTO>> GetUpcomingAssignments(int daysAhead, string userId)
-        {
-            var assignments = await _assignmentRepo.GetListBySpecAsync(new AssignmentSpecs.UpcomingAssignments(daysAhead, userId));
-
-            return _mapper.Map<IEnumerable<AssignmentDTO>>(assignments);
-        }
 
         public async Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters, string userId)
         {
@@ -117,7 +126,7 @@ namespace business_logic.Services
 
         private async Task GenerateNextRecurringTaskAsync(Assignment completedAssignment, string userId)
         {
-            
+
             var nextTask = new Assignment
             {
                 Title = completedAssignment.Title,
@@ -127,8 +136,14 @@ namespace business_logic.Services
                 RefreshType = completedAssignment.RefreshType,
                 IsCompleted = false,
                 IsImportant = completedAssignment.IsImportant,
-                DueDate = CalculateNextDueDate(completedAssignment.DueDate, completedAssignment.RefreshType.Value)
+                DueDate = CalculateNextDueDate(completedAssignment.DueDate, completedAssignment.RefreshType.Value),
+                Steps = completedAssignment.Steps?.Select(s => new Step
+                {
+                    Title = s.Title,
+                    IsCompleted = false
+                }).OrderBy(x => x.Id).ToList() ?? new List<Step>()
             };
+
 
             await _assignmentRepo.InsertAsync(nextTask);
             await _assignmentRepo.SaveAsync();

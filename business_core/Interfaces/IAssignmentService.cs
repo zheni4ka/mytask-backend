@@ -11,5 +11,6 @@ namespace Core.Interfaces
         Task<AssignmentDTO> GetAssignmentAsync(int id, string userId);
         Task<IEnumerable<AssignmentDTO>> GetAll(string userId);
         Task<PagedResult<AssignmentDTO>> GetPagedAssignmentsAsync(PageParameters pageParameters, string userId);
+        Task CheckAndCompleteTaskByStepsAsync(int assignmentId, string userId);
     }
 }
