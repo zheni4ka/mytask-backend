@@ -17,6 +17,8 @@
         public string SearchTerm { get; set; } = string.Empty;
         public string SortBy { get; set; } = string.Empty;
         public bool SortDescending { get; set; } = false;
+        public bool? IsOverdue { get; set; } = false;
+        public bool? IsCompleted { get; set; } = false;
         public bool? IsImportant { get; set; }
     }
 

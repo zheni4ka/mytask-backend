@@ -75,6 +75,16 @@ namespace business_logic.Specifications
                     Query.Where(a => a.IsImportant == pageParameters.IsImportant.Value);
                 }
 
+                if (pageParameters.IsCompleted.HasValue)
+                {
+                    Query.Where(a => a.IsCompleted == pageParameters.IsCompleted.Value);
+                }
+
+                if (pageParameters.IsOverdue == true)
+                {
+                    Query.Where(a => !a.IsCompleted && a.DueDate < DateTime.UtcNow);
+                }
+
                 if (!string.IsNullOrEmpty(pageParameters.SortBy))
                 {
                     switch (pageParameters.SortBy.ToLower())
