@@ -50,7 +50,7 @@ namespace BLL.Services
             }
             else
             {
-                newEvent.Start = new EventDateTime { DateTimeDateTimeOffset = task.DueDate.AddHours(-1) };
+                newEvent.Start = new EventDateTime { DateTimeDateTimeOffset = task.DueDate.AddMinutes(-1) };
                 newEvent.End = new EventDateTime { DateTimeDateTimeOffset = task.DueDate };
             }
 
